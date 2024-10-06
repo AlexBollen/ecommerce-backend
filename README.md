@@ -29,33 +29,33 @@
 ## Project setup
 
 ```bash
-$ pnpm install
+$ yarn install
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-$ pnpm run start
+$ yarn run start
 
 # watch mode
-$ pnpm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ pnpm run start:prod
+$ yarn run start:prod
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ pnpm run test
+$ yarn run test
 
 # e2e tests
-$ pnpm run test:e2e
+$ yarn run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+$ yarn run test:cov
 ```
 
 ## Resources
