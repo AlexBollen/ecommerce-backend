@@ -1,15 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'categoria' })
 export class Category {
-    @PrimaryGeneratedColumn()
-    id_categoria: number
-    @Column({unique: true})
-    nombre_categoria: string
-    @Column({type: 'tinyint'})
-    estado: number
-    @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
-    created_at: Date
-    @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
-    updated_at: Date
+  @PrimaryGeneratedColumn()
+  @ApiProperty()
+  id_categoria: number;
+
+  @Column({ unique: true })
+  @ApiProperty()
+  nombre_categoria: string;
+
+  @Column({ type: 'tinyint', default: 1 })
+  @ApiProperty()
+  estado: number;
+
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @ApiProperty()
+  created_at: Date;
+
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @ApiProperty()
+  updated_at: Date;
 }
