@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    env_file:
+      - .env.development
     environment:
       PORT: ${PORT}
       JWT_SECRET: ${JWT_SECRET}
@@ -13,10 +15,15 @@ services:
       DATABASE_USERNAME: ${DB_USERNAME}
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_NAME: ${DB_NAME}
+    depends_on:
+      - database
+    command: ["npm", "run", "start:dev"]
   database:
     image: mysql:latest
     ports:
       - 3306:3306
+    env_file:
+      - .env.development
     environment:
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
