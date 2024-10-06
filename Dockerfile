@@ -5,19 +5,19 @@ FROM node:18-alpine
 WORKDIR /
 
 # Copia el archivo package.json y pnpm-lock.yaml al contenedor
-COPY package*.json pnpm-lock.yaml ./
+COPY package*.json yarn.lock ./
 
-# Instala pnpm globalmente en el contenedor
-RUN npm install -g pnpm
+# Instala yarn globalmente en el contenedor si no esta instalado
+RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
 # Instalamos las dependencias de la app
-RUN pnpm install
+RUN yarn install
 
-# COpia el resto del código fuente de la app
+# Copia el resto del código fuente de la app
 COPY . .
 
 # Contruye la app
-RUN pnpm build
+RUN yarn build
 
 # Comando para ejecutar la app
 CMD ["node", "dist/main.js"]

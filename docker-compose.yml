@@ -17,7 +17,7 @@ services:
       DATABASE_NAME: ${DB_NAME}
     depends_on:
       - database
-    command: ["npm", "run", "start:dev"]
+    command: ["yarn", "run", "start:dev"]
   database:
     image: mysql:latest
     ports:
