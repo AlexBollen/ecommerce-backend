@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './categories/categories.module';
 import { RolesModule } from './roles/roles.module';
+import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -35,6 +36,7 @@ import * as Joi from 'joi';
     }),
     CategoriesModule,
     RolesModule,
+    TransferStatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
