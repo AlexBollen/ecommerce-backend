@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './categories/categories.module';
+import { AgenciesModule } from './agencies/agencies.module';
 import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { RolesModule } from './roles/roles.module';
 import { TransferStatesModule } from './transfer-states/transfer-states.module';
@@ -38,6 +39,7 @@ import * as Joi from 'joi';
       synchronize: true,
     }),
     CategoriesModule,
+    AgenciesModule,
     PaymentMethodsModule,
     RolesModule,
     TransferStatesModule,
