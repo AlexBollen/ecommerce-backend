@@ -8,6 +8,7 @@ import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { RolesModule } from './roles/roles.module';
 import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import { BrandsModule } from './brands/brands.module';
+import { CustomersModule } from './customers/customers.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -41,6 +42,7 @@ import * as Joi from 'joi';
     RolesModule,
     TransferStatesModule,
     BrandsModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
