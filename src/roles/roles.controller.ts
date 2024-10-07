@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
@@ -71,49 +71,50 @@ export class RolesController {
   @Patch(':id_rol')
   @ApiOperation({
     summary: 'Actualizar un rol',
-    description: 'Este endpoint sirve para actualizar un rol'
+    description: 'Este endpoint sirve para actualizar un rol',
   })
   @ApiParam({
     name: 'id_rol',
     type: Number,
     description: 'Id del rol a actualizar',
-    example: '1'
+    example: '1',
   })
   @ApiBody({
     description: 'Se puede utilizar cualquiera de estos datos para actualizar',
     schema: {
-        type: 'object',
-        properties: {
-            nombre_rol: {
-                type: 'string',
-                example: 'Administrador general'
-            },
-            descripcion_rol: {
-                type: 'string',
-                example: 'Tiene todas las acciones sobre el sistema'
-            }
-        }
-    }
+      type: 'object',
+      properties: {
+        nombre_rol: {
+          type: 'string',
+          example: 'Administrador general',
+        },
+        descripcion_rol: {
+          type: 'string',
+          example: 'Tiene todas las acciones sobre el sistema',
+        },
+      },
+    },
   })
   updateRole(
     @Param('id_rol', ParseIntPipe) id_rol: number,
     @Body() role: UpdateRoleDto,
   ) {
-    return this.roleService.updateRole(id_rol, role)
+    return this.roleService.updateRole(id_rol, role);
   }
 
   @Put(':id_rol')
   @ApiOperation({
     summary: 'Eliminar un rol',
-    description: 'Este endpoint sirve para eliminar un rol (hacerlo no visible)'
+    description:
+      'Este endpoint sirve para eliminar un rol (hacerlo no visible)',
   })
   @ApiParam({
     name: 'id_rol',
     type: Number,
     description: 'Id del rol a eliminar',
-    example: '1'
+    example: '1',
   })
   deleteRole(@Param('id_rol', ParseIntPipe) id_rol: number) {
-    return this.roleService.deleteRole(id_rol)
+    return this.roleService.deleteRole(id_rol);
   }
 }

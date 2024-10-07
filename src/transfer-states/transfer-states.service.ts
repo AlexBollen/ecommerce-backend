@@ -34,15 +34,15 @@ export class TransferStatesService {
     transfer_state: UpdateTransferStateDto,
   ) {
     return this.transferStateRepository.update(
-        { id_estado_transferencia },
-        transfer_state
-    )
+      { id_estado_transferencia },
+      transfer_state,
+    );
   }
 
   deleteTransferState(id_estado_transferencia: number) {
     return this.transferStateRepository.update(
-        { id_estado_transferencia },
-        { estado: 0 }
-    )
+      { id_estado_transferencia },
+      { estado: 0 },
+    );
   }
 }
