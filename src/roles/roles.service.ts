@@ -26,20 +26,14 @@ export class RolesService {
 
   createRole(role: CreateRoleDto) {
     const newRole = this.roleRepository.create(role);
-    this.roleRepository.save(newRole)
+    this.roleRepository.save(newRole);
   }
 
   updateRole(id_rol: number, role: UpdateRoleDto) {
-    return this.roleRepository.update(
-        { id_rol },
-        role
-    )
+    return this.roleRepository.update({ id_rol }, role);
   }
 
   deleteRole(id_rol: number) {
-    return this.roleRepository.update(
-        { id_rol },
-        { estado: 0 }
-    )
+    return this.roleRepository.update({ id_rol }, { estado: 0 });
   }
 }
