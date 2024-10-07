@@ -9,8 +9,8 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 
-import { CreateSucursalDto } from './dto/create-sucursal.dto';
-import { SucursalesService } from './sucursales.service';
+import { CreateAgencyDto } from './dto/create-agency.dto';
+import { AgenciesService } from './agencies.service';
 import {
   ApiBody,
   ApiOperation,
@@ -19,21 +19,21 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Sucursal } from './sucursal.entity';
-import { UpdateSucursalDto } from './dto/update-sucursal.dto';
+import { Agency } from './agency.entity';
+import { UpdateAgencyDto } from './dto/update-agency.dto';
 
-@ApiTags('Sucursales')
-@Controller('sucursales')
-export class SucursalesController {
-  constructor(private sucursalesService: SucursalesService) {}
+@ApiTags('Agencies')
+@Controller('agencies')
+export class AgenciesController {
+  constructor(private agenciesService: AgenciesService) {}
 
   @Get()
   @ApiOperation({
     summary: 'Obtener Sucursales',
     description: 'Este endpoint sirve para listar todas las sucursales',
   })
-  getAllSucursals(): Promise<Sucursal[]> {
-    return this.sucursalesService.getAllSucursales();
+  getAllAgencies(): Promise<Agency[]> {
+    return this.agenciesService.getAllAgencies();
   }
 
   @Get(':id_sucursal')
@@ -47,10 +47,10 @@ export class SucursalesController {
     description: 'Id de la sucursal a obtener',
     example: '1',
   })
-  getSucursal(
+  getAgency(
     @Param('id_sucursal', ParseIntPipe) id_sucursal: number,
-  ): Promise<Sucursal> {
-    return this.sucursalesService.getSucursal(id_sucursal);
+  ): Promise<Agency> {
+    return this.agenciesService.getAgency(id_sucursal);
   }
 
   @Post()
@@ -82,8 +82,8 @@ export class SucursalesController {
       },
     },
   })
-  createSucursal(@Body() newSucursal: CreateSucursalDto) {
-    return this.sucursalesService.createSucursal(newSucursal);
+  createAgency(@Body() newAgency: CreateAgencyDto) {
+    return this.agenciesService.createAgency(newAgency);
   }
 
   @Patch(':id_sucursal')
@@ -121,11 +121,11 @@ export class SucursalesController {
       },
     },
   })
-  updateSucursal(
+  updateAgency(
     @Param('id_sucursal', ParseIntPipe) id_sucursal: number,
-    @Body() sucursal: UpdateSucursalDto,
+    @Body() sucursal: UpdateAgencyDto,
   ) {
-    return this.sucursalesService.updateSucursal(id_sucursal, sucursal);
+    return this.agenciesService.updateAgency(id_sucursal, sucursal);
   }
 
   @Put(':id_sucursal')
@@ -140,7 +140,7 @@ export class SucursalesController {
     description: 'Id de la sucursal a eliminar',
     example: '1',
   })
-  deleteSucursal(@Param('id_sucursal', ParseIntPipe) id_sucursal: number) {
-    return this.sucursalesService.deleteSucursal(id_sucursal);
+  deleteAgency(@Param('id_sucursal', ParseIntPipe) id_sucursal: number) {
+    return this.agenciesService.deleteAgency(id_sucursal);
   }
 }

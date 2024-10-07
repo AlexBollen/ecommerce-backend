@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'sucursal' })
-export class Sucursal {
+export class Agency {
   @PrimaryGeneratedColumn()
   @ApiProperty()
   id_sucursal: number;
@@ -19,7 +19,7 @@ export class Sucursal {
   @ApiProperty()
   telefono: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ nullable: true })
   @ApiProperty()
   correo: string;
 
