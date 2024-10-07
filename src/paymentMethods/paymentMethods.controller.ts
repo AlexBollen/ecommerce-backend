@@ -9,8 +9,8 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 
-import { CreatePayment_MethodDto } from './dto/create-payment_method.dto';
-import { PaymentMethodsService } from './payment_methods.service';
+import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
+import { PaymentMethodsService } from './paymentMethods.service';
 import {
   ApiBody,
   ApiOperation,
@@ -19,11 +19,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Payment_Method } from './payment_method.entity';
-import { UpdatePayment_MethodDto } from './dto/update-payment_method.dto';
+import { PaymentMethod } from './paymentMethod.entity';
+import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 
-@ApiTags('Payment_methods')
-@Controller('payment_methods')
+@ApiTags('PaymentMethods')
+@Controller('paymentMethods')
 export class PaymentMethodsController {
   constructor(private paymentmethodsService: PaymentMethodsService) {}
 
@@ -32,7 +32,7 @@ export class PaymentMethodsController {
     summary: 'Obtener Metodos de Pago',
     description: 'Este endpoint sirve para listar todos los tipos de pago',
   })
-  getAllPaymentMethods(): Promise<Payment_Method[]> {
+  getAllPaymentMethods(): Promise<PaymentMethod[]> {
     return this.paymentmethodsService.getAllPaymentMethods();
   }
 
@@ -49,7 +49,7 @@ export class PaymentMethodsController {
   })
   getPaymentMethod(
     @Param('id_metodo_pago', ParseIntPipe) id_metodo_pago: number,
-  ): Promise<Payment_Method> {
+  ): Promise<PaymentMethod> {
     return this.paymentmethodsService.getPaymentMethod(id_metodo_pago);
   }
 
@@ -70,7 +70,7 @@ export class PaymentMethodsController {
       },
     },
   })
-  createPaymentMethod(@Body() newPaymentMethod: CreatePayment_MethodDto) {
+  createPaymentMethod(@Body() newPaymentMethod: CreatePaymentMethodDto) {
     return this.paymentmethodsService.createPaymentMethod(newPaymentMethod);
   }
 
@@ -99,7 +99,7 @@ export class PaymentMethodsController {
   })
   updatePaymentMethod(
     @Param('id_metodo_pago', ParseIntPipe) id_metodo_pago: number,
-    @Body() payment_method: UpdatePayment_MethodDto,
+    @Body() payment_method: UpdatePaymentMethodDto,
   ) {
     return this.paymentmethodsService.updatePaymentMethod(
       id_metodo_pago,
