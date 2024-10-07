@@ -105,7 +105,8 @@ export class CategoriesController {
   @Put(':id_categoria')
   @ApiOperation({
     summary: 'Eliminar una categoría',
-    description: 'Este endpoint sirve para eliminar un categoría (hacerla no visible)'
+    description:
+      'Este endpoint sirve para eliminar un categoría (hacerla no visible)',
   })
   @ApiParam({
     name: 'id_categoria',
@@ -113,7 +114,7 @@ export class CategoriesController {
     description: 'Id de la categoría a eliminar',
     example: '1',
   })
-  deleteCategory(@Param('id_categoria', ParseIntPipe) id_categoria: number){
-    return this.categoryService.deleteCategory(id_categoria)
+  deleteCategory(@Param('id_categoria', ParseIntPipe) id_categoria: number) {
+    return this.categoryService.deleteCategory(id_categoria);
   }
 }

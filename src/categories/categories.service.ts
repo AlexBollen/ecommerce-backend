@@ -13,15 +13,15 @@ export class CategoriesService {
   ) {}
 
   getAllCategories() {
-    return this.categoryRepository.find()
+    return this.categoryRepository.find();
   }
 
   getCategory(id_categoria: number) {
     return this.categoryRepository.findOne({
-        where: {
-            id_categoria
-        }
-    })
+      where: {
+        id_categoria,
+      },
+    });
   }
 
   createCategory(category: CreateCategoryDto) {
@@ -31,15 +31,12 @@ export class CategoriesService {
 
   updateCategory(id_categoria: number, category: UpdateCategoryDto) {
     return this.categoryRepository.update(
-        { id_categoria: id_categoria },
-        category
-    )
+      { id_categoria: id_categoria },
+      category,
+    );
   }
 
   deleteCategory(id_categoria: number) {
-    return this.categoryRepository.update(
-        { id_categoria },
-        { estado: 0 }
-    )
+    return this.categoryRepository.update({ id_categoria }, { estado: 0 });
   }
 }

@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './categories/categories.module';
+import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { RolesModule } from './roles/roles.module';
 import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import { BrandsModule } from './brands/brands.module';
@@ -16,14 +17,14 @@ import * as Joi from 'joi';
       envFilePath: '.env.development',
       validationSchema: Joi.object({
         PORT: Joi.number().default(3000),
-        JWT_SECRET: Joi.string().required(), 
+        JWT_SECRET: Joi.string().required(),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.number().default(3306),
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         ROOT_PASSWORD: Joi.string().required(),
-      })
+      }),
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -33,9 +34,10 @@ import * as Joi from 'joi';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true
+      synchronize: true,
     }),
     CategoriesModule,
+    PaymentMethodsModule,
     RolesModule,
     TransferStatesModule,
     BrandsModule,
