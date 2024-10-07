@@ -41,7 +41,8 @@ export class TransferStatesController {
     example: '1',
   })
   getTransferState(
-    @Param('id_estado_transferencia') id_estado_transferencia: number,
+    @Param('id_estado_transferencia', ParseIntPipe)
+    id_estado_transferencia: number,
   ): Promise<TransferState> {
     return this.transferStateService.getTransferState(id_estado_transferencia);
   }

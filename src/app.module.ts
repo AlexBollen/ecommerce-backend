@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './categories/categories.module';
 import { AgenciesModule } from './agencies/agencies.module';
-import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 import { RolesModule } from './roles/roles.module';
 import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import { BrandsModule } from './brands/brands.module';
