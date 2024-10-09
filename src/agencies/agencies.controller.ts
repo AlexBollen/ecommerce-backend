@@ -79,6 +79,14 @@ export class AgenciesController {
           type: 'string',
           example: 'example@gmail.com',
         },
+        latitud_gps: {
+          type: 'number',
+          example: '21.2342'
+        },
+        longitud_gps: {
+          type: 'number',
+          example: '43.2405'
+        }
       },
     },
   })
