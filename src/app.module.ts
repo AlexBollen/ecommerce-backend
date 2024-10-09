@@ -11,6 +11,8 @@ import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import { BrandsModule } from './brands/brands.module';
 import { CustomersModule } from './customers/customers.module';
 import { LocationsModule } from './locations/locations.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -47,6 +49,8 @@ import * as Joi from 'joi';
     BrandsModule,
     CustomersModule,
     LocationsModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
