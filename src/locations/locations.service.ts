@@ -26,16 +26,23 @@ export class LocationsService {
       .getRawMany();
   }
 
-  getLocation(id_ubicacion: number) {
-    return this.locationRepository.findOne({
-      where: {
-        id_ubicacion,
-      },
-    });
+  getLocation(id_ubicacion: number): Promise<any> {
+    return this.locationRepository
+      .createQueryBuilder('ubicacion')
+      .select([
+        'ubicacion.id_ubicacion AS id_ubicacion',
+        'ST_X(ubicacion.ubicacion_gps) AS latitud',
+        'ST_Y(ubicacion.ubicacion_gps) AS longitud',
+        'ubicacion.estado AS estado',
+        'ubicacion.created_at AS created_at',
+        'ubicacion.updated_at AS updated_at',
+      ])
+      .where('id_ubicacion = :id_ubicacion', { id_ubicacion })
+      .getRawOne();
   }
 
   async createLocation(points: GpsLocationDto) {
-    await this.locationRepository
+    const result = await this.locationRepository
       .createQueryBuilder()
       .insert()
       .into(Location)
@@ -44,6 +51,8 @@ export class LocationsService {
           `ST_GeomFromText('POINT(${points.latitud_gps} ${points.longitud_gps})')`,
       })
       .execute();
+    const locationId = result.raw.insertId;
+    return await this.getLocation(locationId);
   }
 
   async updateLocation(id_ubicacion: number, location: UpdateLocationDto) {
@@ -58,7 +67,7 @@ export class LocationsService {
       .execute();
   }
 
-    deleteLocation(id_ubicacion: number) {
-      return this.locationRepository.update({ id_ubicacion }, { estado: 0 });
-    }
+  deleteLocation(id_ubicacion: number) {
+    return this.locationRepository.update({ id_ubicacion }, { estado: 0 });
+  }
 }

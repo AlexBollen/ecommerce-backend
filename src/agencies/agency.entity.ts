@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Location } from 'src/locations/location.entity';
 
 @Entity({ name: 'sucursal' })
 export class Agency {
@@ -34,4 +35,9 @@ export class Agency {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty()
   updated_at: Date;
+
+  @OneToOne(() => Location, { nullable: true})
+  @JoinColumn()
+  @ApiProperty()
+  ubicacion: Location
 }

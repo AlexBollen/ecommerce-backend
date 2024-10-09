@@ -9,7 +9,8 @@ export class Location {
 
   @Column({
     type: 'point',
-    nullable: true,
+    spatialFeatureType: 'Point',
+    srid: 4326,
   })
   @ApiProperty()
   ubicacion_gps: string;
