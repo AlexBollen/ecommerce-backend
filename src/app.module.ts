@@ -10,6 +10,7 @@ import { RolesModule } from './roles/roles.module';
 import { TransferStatesModule } from './transfer-states/transfer-states.module';
 import { BrandsModule } from './brands/brands.module';
 import { CustomersModule } from './customers/customers.module';
+import { LocationsModule } from './locations/locations.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -45,6 +46,7 @@ import * as Joi from 'joi';
     TransferStatesModule,
     BrandsModule,
     CustomersModule,
+    LocationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
