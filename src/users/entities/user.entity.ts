@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from 'src/roles/role.entity';
 import {
   Column,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -34,4 +36,7 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => Role, (role) => role.users)
+  role: Role;
 }
