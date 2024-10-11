@@ -29,14 +29,18 @@ export class AuthController {
         },
         password: {
           type: 'string',
-          example: 'myStrongPassword'
-        }
+          example: 'myStrongPassword',
+        },
+        id_rol: {
+          type: 'number',
+          example: '1',
+        },
       },
     },
   })
   register(
     @Body()
-    registerDto: RegisterDto
+    registerDto: RegisterDto,
   ) {
     return this.authService.register(registerDto);
   }
@@ -57,14 +61,14 @@ export class AuthController {
         },
         password: {
           type: 'string',
-          example: 'myStrongPassword'
-        }
+          example: 'myStrongPassword',
+        },
       },
     },
   })
   login(
     @Body()
-    loginDto: LoginDto
+    loginDto: LoginDto,
   ) {
     return this.authService.login(loginDto);
   }

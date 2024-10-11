@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity({ name: 'rol' })
 export class Role {
@@ -26,4 +27,7 @@ export class Role {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty()
   updated_at: Date;
+
+  @OneToMany(() => User, (user) => user.role)
+  users: User[];
 }
