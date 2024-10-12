@@ -9,13 +9,14 @@ import { RolesModule } from 'src/roles/roles.module';
   imports: [
     UsersModule,
     RolesModule,
-    JwtModule.register({
-      global: true,
-      secret: `${process.env.JWT_SECRET}`,
-      signOptions: { expiresIn: '3h'}
-    })
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: `${process.env.JWT_SECRET}`,
+        signOptions: { expiresIn: '3h' },
+      }),
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService],
 })
 export class AuthModule {}

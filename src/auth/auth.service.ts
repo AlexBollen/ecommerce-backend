@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly roleService: RolesService
+    private readonly roleService: RolesService,
   ) {}
 
   async register({ nombre_persona, username, password, id_rol }: RegisterDto) {
@@ -25,16 +25,21 @@ export class AuthService {
     if (user) {
       throw new BadRequestException('El usuario ya esta registrado');
     }
-    const role = await this.roleService.getRole(id_rol)
+    const role = await this.roleService.getRole(id_rol);
     if (!role) {
-      throw new HttpException('No se encontro el rol', HttpStatus.NOT_FOUND)
+      throw new HttpException('No se encontro el rol', HttpStatus.NOT_FOUND);
     }
-    return await this.userService.createUser({
+    await this.userService.createUser({
       nombre_persona,
       username,
       password: await bcryptjs.hash(password, 10),
-      role
+      role,
     });
+    return {
+      nombre_persona,
+      username,
+      role
+    }
   }
 
   async login({ username, password }: LoginDto) {
@@ -47,12 +52,11 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('La contraseña no es correcta');
     }
-
-    const payload = { username: user.username };
+    const payload = { sub: user.id_usuario, username: user.username, role: user.id_rol };
     const token = await this.jwtService.signAsync(payload);
     return {
-        token,
-        username
-    }
+      token,
+      username,
+    };
   }
 }

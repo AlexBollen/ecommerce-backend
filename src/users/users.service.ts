@@ -17,6 +17,19 @@ export class UsersService {
   }
 
   findByUsername(username: string) {
-    return this.userRepository.findOneBy({ username });
+    // return this.userRepository.findOneBy({ username });
+    return this.userRepository
+      .createQueryBuilder('usuario')
+      .leftJoinAndSelect('usuario.role', 'rol')
+      .select([
+        'usuario.id_usuario AS id_usuario',
+        'usuario.nombre_persona AS nombre_persona',
+        'usuario.username AS username',
+        'usuario.password AS password',
+        'usuario.estado AS estado',
+        'rol.id_rol AS id_rol',
+      ])
+      .where('usuario.username = :username', { username })
+      .getRawOne();
   }
 }
