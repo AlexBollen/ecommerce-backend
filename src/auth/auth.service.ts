@@ -52,11 +52,14 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('La contraseña no es correcta');
     }
+    const role = await this.roleService.getRole(user.id_rol);
     const payload = { sub: user.id_usuario, username: user.username, role: user.id_rol };
     const token = await this.jwtService.signAsync(payload);
     return {
       token,
-      username,
+      sub: user.id_usuario,
+      name: user.nombre_persona,
+      role: role.nombre_rol,
     };
   }
 }
