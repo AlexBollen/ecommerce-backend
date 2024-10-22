@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Product } from 'src/products/product.entity';
 
 @Entity({ name: 'marca' })
 export class Brand {
@@ -22,4 +23,7 @@ export class Brand {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty()
   updated_at: Date;
+
+  @OneToMany(() => Product, (product) => product.marca)
+  productos: Product[]
 }

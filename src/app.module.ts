@@ -13,6 +13,7 @@ import { CustomersModule } from './customers/customers.module';
 import { LocationsModule } from './locations/locations.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -48,6 +49,7 @@ import * as Joi from 'joi';
     CustomersModule,
     LocationsModule,
     PaymentMethodsModule,
+    ProductsModule,
     RolesModule,
     TransferStatesModule,
     UsersModule,
