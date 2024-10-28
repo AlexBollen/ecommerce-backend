@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -21,5 +23,29 @@ export class ProductsService {
       ])
       .where('producto.estado = 1')
       .getRawMany();
+  }
+
+  getProduct(id_producto: number) {
+    return this.productRepository.findOne({
+      where: {
+        id_producto,
+      },
+    });
+  }
+
+  createProduct(product: CreateProductDto) {
+    const newProduct = this.productRepository.create(product);
+    this.productRepository.save(newProduct);
+  }
+
+  updateProduct(id_producto: number, product: UpdateProductDto) {
+    return this.productRepository.update(
+      { id_producto: id_producto },
+      product,
+    );
+  }
+
+  deleteProduct(id_producto: number) {
+    return this.productRepository.update({ id_producto }, { estado: 0 });
   }
 }

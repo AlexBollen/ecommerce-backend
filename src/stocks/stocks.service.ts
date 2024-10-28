@@ -16,7 +16,7 @@ export class StocksService {
   getAllStocks() {
     return this.stockRepository
       .createQueryBuilder('stock')
-      .leftJoinAndSelect('stock.categoria', 'categoria')
+      .leftJoinAndSelect('stock.sucursal', 'sucursal')
       .leftJoinAndSelect('stock.producto', 'producto')
 
       .select([
