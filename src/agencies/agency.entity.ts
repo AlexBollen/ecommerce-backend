@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Location } from 'src/locations/location.entity';
+import {Stock} from 'src/stocks/entities/stock.entity';
 
 @Entity({ name: 'sucursal' })
 export class Agency {
@@ -40,4 +41,7 @@ export class Agency {
   @JoinColumn()
   @ApiProperty()
   ubicacion: Location
+
+  @OneToMany(() => Stock, (stock) => stock.sucursal)
+  stocks: Stock[]
 }

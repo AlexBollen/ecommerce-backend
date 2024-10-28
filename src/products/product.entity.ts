@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "ty
 import { ApiProperty } from "@nestjs/swagger";
 import { Category } from "src/categories/category.entity";
 import { Brand } from "src/brands/brand.entity";
+import {Stock} from 'src/stocks/entities/stock.entity';
 
 @Entity({ name: 'producto' })
 export class Product {
@@ -50,4 +51,7 @@ export class Product {
 
     @ManyToOne(() => Brand, (brand) => brand.productos)
     marca: Brand
+
+    @OneToMany(() => Stock, (stock) => stock.producto)
+  stocks: Stock[]
 }
