@@ -14,6 +14,7 @@ import { LocationsModule } from './locations/locations.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
+import { StocksModule } from './stocks/stocks.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -53,6 +54,7 @@ import * as Joi from 'joi';
     RolesModule,
     TransferStatesModule,
     UsersModule,
+    StocksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
