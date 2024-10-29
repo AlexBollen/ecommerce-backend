@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "ty
 import { ApiProperty } from "@nestjs/swagger";
 import { Product } from "src/products/product.entity";
 import { Agency } from "src/agencies/agency.entity";
+import { DetailQuote } from "src/detail-quotes/entities/detail-quote.entity";
 
 @Entity({ name: 'stock' })
 export class Stock {
@@ -35,4 +36,7 @@ export class Stock {
 
     @ManyToOne(() => Agency, (agency) => agency.stocks)
     sucursal: Agency
+
+    @OneToMany(() => DetailQuote, (detailQuote) => detailQuote.stock)
+    detalle_cotizaciones: DetailQuote[]
 }
