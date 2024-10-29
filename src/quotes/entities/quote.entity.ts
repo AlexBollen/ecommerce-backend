@@ -3,6 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/users/entities/user.entity";
 import { Customer } from "src/customers/customer.entity";
 import { Agency } from "src/agencies/agency.entity";
+import { DetailQuote } from "src/detail-quotes/entities/detail-quote.entity";
 
 @Entity({ name: 'quote' })
 export class Quote {
@@ -34,4 +35,7 @@ export class Quote {
 
     @ManyToOne(() => User, (user) => user.cotizaciones)
     usuario: User
+
+    @OneToMany(() => DetailQuote, (detailQuote) => detailQuote.cotizacion)
+    detalle_cotizaciones: DetailQuote[]
 }
