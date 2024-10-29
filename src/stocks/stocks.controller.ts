@@ -55,13 +55,13 @@ export class StocksController {
     schema: {
       type: 'object',
       properties: {
-        cantidad_minima: {
+        cantidad_inicial: {
           type: 'number',
-          example: 12,
+          example: '12',
         },
         cantidad_actual: {
           type: 'number',
-          example: '12',
+          example: '17',
         },
       },
     },
@@ -86,7 +86,7 @@ export class StocksController {
     schema: {
       type: 'object',
       properties: {
-        cantidad_minima: {
+        cantidad_inicial: {
           type: 'number',
           example: '12',
         },
