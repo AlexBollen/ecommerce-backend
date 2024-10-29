@@ -8,7 +8,7 @@ export class CreateStockDto {
     cantidad_inicial: number;
 
     @IsInt()
-    @Min(1)
+    @Min(0)
     cantidad_actual: number;
 
 }
