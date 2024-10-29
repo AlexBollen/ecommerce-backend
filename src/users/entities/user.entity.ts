@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from 'src/roles/role.entity';
+import { Quote } from 'src/quotes/entities/quote.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,4 +41,7 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToMany(() => Quote, (quote) => quote.usuario)
+  cotizaciones: Quote[]
 }
