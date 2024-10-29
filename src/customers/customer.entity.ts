@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Quote } from 'src/quotes/entities/quote.entity';
 
 @Entity({ name: 'cliente' })
 export class Customer {
@@ -38,4 +39,7 @@ export class Customer {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty()
   updated_at: Date;
+
+  @OneToMany(() => Quote, (quote) => quote.cliente)
+  cotizaciones: Quote[]
 }
