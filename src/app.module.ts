@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static'
 import { CategoriesModule } from './categories/categories.module';
 import { AgenciesModule } from './agencies/agencies.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
@@ -18,6 +19,7 @@ import { StocksModule } from './stocks/stocks.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { DetailQuotesModule } from './detail-quotes/detail-quotes.module';
 import * as Joi from 'joi';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -44,6 +46,10 @@ import * as Joi from 'joi';
       database: `${process.env.DB_NAME}`,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads'
     }),
     AuthModule,
     AgenciesModule,

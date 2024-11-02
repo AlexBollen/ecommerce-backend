@@ -19,6 +19,7 @@ export class ProductsService {
         'producto.id_producto AS id_producto',
         'producto.nombre_producto AS nombre_producto',
         'producto.precio_venta AS precio_venta',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
         'categoria.nombre_categoria AS nombre_categoria',
       ])
       .where('producto.estado = 1')

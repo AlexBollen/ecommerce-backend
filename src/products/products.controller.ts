@@ -7,12 +7,24 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
-import { ApiOperation, ApiParam, ApiTags, ApiBody } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
 import { UpdateProductDto } from 'src/products/dto/update-product.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { extname } from 'path';
 
 @ApiTags('Products')
 @Controller('products')
@@ -22,13 +34,12 @@ export class ProductsController {
   @Get()
   @ApiOperation({
     summary: 'Obtener productos',
-    description: 'Este endpoint sirve para listar todos los productos'
+    description: 'Este endpoint sirve para listar todos los productos',
   })
   getAllProducts(): Promise<Product[]> {
-    return this.productsService.getAllProducts()
+    return this.productsService.getAllProducts();
   }
 
-  
   @Get(':id_producto')
   @ApiOperation({
     summary: 'Obtener producto',
@@ -47,10 +58,22 @@ export class ProductsController {
   }
 
   @Post()
+  @UseInterceptors(
+    FileInterceptor('imagen', {
+      storage: diskStorage({
+        destination: './uploads/products',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
+          callback(null, uniqueSuffix);
+        },
+      }),
+    }),
+  )
   @ApiOperation({
     summary: 'Crear una nuevo producto',
     description: 'Este endpoint sirve para crear nuevo producto ',
   })
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Datos necesarios para crear un nuevo producto .',
     schema: {
@@ -69,21 +92,32 @@ export class ProductsController {
           example: 'modelo nuevo',
         },
         cantidad_minima: {
-          type: 'number',
+          type: 'string',
           example: '14',
         },
         precio_costo: {
-          type: 'number',
-          example: '145',
+          type: 'string',
+          example: '145.0',
         },
         precio_venta: {
-          type: 'number',
-          example: '145',
+          type: 'string',
+          example: '170.0',
+        },
+        imagen: {
+          type: 'string',
+          format: 'binary',
         },
       },
     },
   })
-  createProduct(@Body() newProduct: CreateProductDto) {
+  createProduct(
+    @Body() newProduct: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    newProduct.cantidad_minima = Number(newProduct.cantidad_minima);
+    newProduct.precio_costo = Number(newProduct.precio_costo);
+    newProduct.precio_venta = Number(newProduct.precio_venta);
+    newProduct.imagen = file ? file.path : null;
     return this.productsService.createProduct(newProduct);
   }
 
