@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { StocksModule } from './stocks/stocks.module';
+import { EmployeeAgencyRelationModule } from './employee-agency-relation/employee-agency-relation.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -55,6 +56,7 @@ import * as Joi from 'joi';
     TransferStatesModule,
     UsersModule,
     StocksModule,
+    EmployeeAgencyRelationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

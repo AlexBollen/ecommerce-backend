@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EmployeeAgencyRelation } from 'src/employee-agency-relation/entities/employee-agency-relation.entity';
 import { Role } from 'src/roles/role.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,4 +41,7 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToMany(() => EmployeeAgencyRelation, relacion => relacion.usuario)
+  relacionEmpleadoSucursal: EmployeeAgencyRelation[];
 }

@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany
 import { ApiProperty } from '@nestjs/swagger';
 import { Location } from 'src/locations/location.entity';
 import {Stock} from 'src/stocks/entities/stock.entity';
+import { EmployeeAgencyRelation } from 'src/employee-agency-relation/entities/employee-agency-relation.entity';
 
 @Entity({ name: 'sucursal' })
 export class Agency {
@@ -44,4 +45,8 @@ export class Agency {
 
   @OneToMany(() => Stock, (stock) => stock.sucursal)
   stocks: Stock[]
+
+  @OneToMany(() => EmployeeAgencyRelation, relacion => relacion.sucursal)
+  relacionEmpleadoSucursal: EmployeeAgencyRelation;
+  
 }
