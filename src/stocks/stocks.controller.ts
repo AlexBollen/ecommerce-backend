@@ -3,7 +3,13 @@ import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { Stock } from './entities/stock.entity';
 
-import { ApiOperation, ApiParam, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiBody,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -15,7 +21,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 
-
 @ApiTags('Stocks')
 @Controller('stocks')
 export class StocksController {
@@ -24,25 +29,40 @@ export class StocksController {
   @Get()
   @ApiOperation({
     summary: 'Obtener stocks',
-    description: 'Este endpoint sirve para listar todos los stocks'
+    description: 'Este endpoint sirve para listar todos los stocks',
   })
   getAllStocks(): Promise<Stock[]> {
-    return this.stocksService.getAllStocks()
+    return this.stocksService.getAllStocks();
   }
 
-  @Get(':id_stock')
+  // @Get(':id_stock')
+  // @ApiOperation({
+  //   summary: 'Obtener stock',
+  //   description: 'Este endpoint sirve para obtener un stock',
+  // })
+  // @ApiParam({
+  //   name: 'id_stock',
+  //   type: Number,
+  //   description: 'Id del stock a obtener',
+  //   example: '1',
+  // })
+  // getStock(@Param('id_stock', ParseIntPipe) id_stock: number): Promise<Stock> {
+  //   return this.stocksService.getStock(id_stock);
+  // }
+
+  @Get(':id_product')
   @ApiOperation({
-    summary: 'Obtener stock',
-    description: 'Este endpoint sirve para obtener un stock',
+    summary: 'Obtener stocks de producto específico',
+    description: 'Este endpoint sirve para listar los stocks de un producto',
   })
   @ApiParam({
-    name: 'id_stock',
+    name: 'id_product',
     type: Number,
-    description: 'Id del stock a obtener',
+    description: 'Id del producto a obtener stocks',
     example: '1',
   })
-  getStock(@Param('id_stock', ParseIntPipe) id_stock: number): Promise<Stock> {
-    return this.stocksService.getStock(id_stock);
+  getStocksByProduct(@Param('id_product', ParseIntPipe) id_product: number) {
+    return this.stocksService.getStocksByProducct(id_product);
   }
 
   @Post()

@@ -7,6 +7,7 @@ import { UpdateAgencyDto } from './dto/update-agency.dto';
 import { LocationsService } from 'src/locations/locations.service';
 import { GpsLocationDto } from 'src/locations/dto/create-location.dto';
 import { CreateAgencyLocationDto } from './dto/create-agency-location.dto';
+import { haversineDistance } from 'src/utils/haversine.utils';
 
 @Injectable()
 export class AgenciesService {
@@ -15,6 +16,7 @@ export class AgenciesService {
     private AgencyRepository: Repository<Agency>,
     private locationService: LocationsService,
   ) {}
+
   getAllAgencies() {
     return this.AgencyRepository.createQueryBuilder('sucursal')
       .leftJoinAndSelect('sucursal.ubicacion', 'ubicacion')
@@ -33,6 +35,32 @@ export class AgenciesService {
       ])
       .getRawMany();
   }
+
+  async getClosestLocation(userCoordinates: { lat: number; lon: number }) {
+    const agencies = await this.getAllAgencies();
+
+    let closest = agencies[0];
+    let minDistance = haversineDistance(
+      userCoordinates.lat,
+      userCoordinates.lon,
+      closest.latitud,
+      closest.longitud,
+    );
+    for (const agency of agencies) {
+      const distance = haversineDistance(
+        userCoordinates.lat,
+        userCoordinates.lon,
+        agency.latitud,
+        agency.longitud
+      )
+      if (distance < minDistance) {
+        minDistance = distance
+        closest = agency
+      }
+    }
+    return closest;
+  }
+
   getAgency(id_sucursal: number) {
     return this.AgencyRepository.findOne({
       where: {
@@ -40,6 +68,7 @@ export class AgenciesService {
       },
     });
   }
+
   async createAgency(sucursal: CreateAgencyDto) {
     let relatedLocation = null;
     if (sucursal.latitud_gps && sucursal.longitud_gps) {
@@ -58,9 +87,11 @@ export class AgenciesService {
     });
     await this.AgencyRepository.save(newAgency);
   }
+
   updateAgency(id_sucursal: number, sucursal: UpdateAgencyDto) {
     return this.AgencyRepository.update({ id_sucursal: id_sucursal }, sucursal);
   }
+
   deleteAgency(id_sucursal: number) {
     return this.AgencyRepository.update({ id_sucursal }, { estado: 0 });
   }

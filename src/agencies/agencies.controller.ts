@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 
 import { CreateAgencyDto } from './dto/create-agency.dto';
@@ -15,6 +16,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -34,6 +36,34 @@ export class AgenciesController {
   })
   getAllAgencies(): Promise<Agency[]> {
     return this.agenciesService.getAllAgencies();
+  }
+
+  @Get('sucursalCercana')
+  @ApiOperation({
+    summary: 'Obtener sucursal mas cercana',
+    description:
+      'Este endpoint sirve para obtener la sucursal mas cercana en base a las coordenadas del usuario',
+  })
+  @ApiQuery({
+    name: 'latitud',
+    description: 'Latitud de la ubicación del usuario',
+    required: true,
+    example: 24.2433,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'longitud',
+    description: 'Longitud de la ubicación del usuario',
+    required: true,
+    example: -90.2344,
+    type: Number,
+  })
+  getClosestLocation(
+    @Query('latitud') latitud: number,
+    @Query('longitud') longitud: number,
+  ) {
+    const userCoordinates = { lat: latitud, lon: longitud };
+    return this.agenciesService.getClosestLocation(userCoordinates);
   }
 
   @Get(':id_sucursal')
@@ -81,12 +111,12 @@ export class AgenciesController {
         },
         latitud_gps: {
           type: 'number',
-          example: '21.2342'
+          example: '21.2342',
         },
         longitud_gps: {
           type: 'number',
-          example: '43.2405'
-        }
+          example: '43.2405',
+        },
       },
     },
   })

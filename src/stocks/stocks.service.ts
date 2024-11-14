@@ -7,9 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class StocksService {
-
   constructor(
-    @InjectRepository(Stock) 
+    @InjectRepository(Stock)
     private stockRepository: Repository<Stock>,
   ) {}
 
@@ -18,11 +17,10 @@ export class StocksService {
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.sucursal', 'sucursal')
       .leftJoinAndSelect('stock.producto', 'producto')
-
       .select([
         'stock.id_stock AS id_stock',
         'stock.cantidad_inicial AS cantidad_inicial',
-        'stock.cantidad_actual AS cantidad_actual'
+        'stock.cantidad_actual AS cantidad_actual',
       ])
       .where('stock.estado = 1')
       .getRawMany();
@@ -33,6 +31,22 @@ export class StocksService {
         id_stock,
       },
     });
+  }
+
+  getStocksByProducct(id_product: number) {
+    return this.stockRepository
+      .createQueryBuilder('stock')
+      .leftJoinAndSelect('stock.sucursal', 'sucursal')
+      .select([
+        'sucursal.nombre_sucursal AS sucursal',
+        'SUM(stock.cantidad_actual) AS existencias',
+      ])
+      .where(
+        'stock.productoIdProducto = :id_product AND stock.estado = 1 AND stock.cantidad_actual > 0',
+        { id_product },
+      )
+      .groupBy('sucursal.nombre_sucursal')
+      .getRawMany();
   }
 
   createStock(stock: CreateStockDto) {
@@ -47,5 +61,4 @@ export class StocksService {
   deleteStock(id_stock: number) {
     return this.stockRepository.update({ id_stock }, { estado: 0 });
   }
-  
 }
