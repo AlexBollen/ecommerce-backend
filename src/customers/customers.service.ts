@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import * as bcryptjs from 'bcryptjs';
+import { CustomerLoginDto } from './dto/customer-login.dto';
 
 @Injectable()
 export class CustomersService {
@@ -23,6 +24,29 @@ export class CustomersService {
         id_cliente,
       },
     });
+  }
+
+  getCustomerByEmail(email: string) {
+    return this.customerRepository.findOne({
+      where: {
+        correo_cliente: email,
+      },
+    });
+  }
+
+  async customerLogin({ correo_cliente, password_cliente }: CustomerLoginDto) {
+    const customer = await this.getCustomerByEmail(correo_cliente);
+    if (!customer) {
+      throw new Error(`No existe un cliente con correo ${correo_cliente}`);
+    }
+    const isPasswordValid = await bcryptjs.compare(
+      password_cliente,
+      customer.password_cliente,
+    );
+    if (!isPasswordValid) {
+      throw new Error('La contraseña no es correcta');
+    }
+    return customer;
   }
 
   async createCustomer(customer: CreateCustomerDto) {
