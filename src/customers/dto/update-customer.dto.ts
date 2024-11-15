@@ -27,4 +27,12 @@ export class UpdateCustomerDto {
   @IsString()
   @MinLength(1)
   direccion_cliente?: string;
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  municipio_cliente?: string;
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  departamento_cliente?: string;
 }

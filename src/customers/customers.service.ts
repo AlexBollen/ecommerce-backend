@@ -4,6 +4,8 @@ import { Customer } from './customer.entity';
 import { Repository } from 'typeorm';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import * as bcryptjs from 'bcryptjs';
+
 @Injectable()
 export class CustomersService {
   constructor(
@@ -23,9 +25,12 @@ export class CustomersService {
     });
   }
 
-  createCustomer(customer: CreateCustomerDto) {
-    const newCustomer = this.customerRepository.create(customer);
-    this.customerRepository.save(newCustomer);
+  async createCustomer(customer: CreateCustomerDto) {
+    const newCustomer = this.customerRepository.create({
+      ...customer,
+      password_cliente: await bcryptjs.hash(customer.password_cliente, 10),
+    });
+    return this.customerRepository.save(newCustomer);
   }
 
   updateCustomer(id_cliente: number, customer: UpdateCustomerDto) {
