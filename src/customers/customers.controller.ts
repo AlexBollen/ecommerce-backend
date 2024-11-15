@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { CreateCustomerDto } from './dto/create-customer.dto';
+import { CustomerLoginDto } from './dto/customer-login.dto';
 import { CustomersService } from './customers.service';
 import {
   ApiBody,
@@ -51,6 +52,31 @@ export class CustomersController {
     @Param('id_cliente', ParseIntPipe) id_cliente: number,
   ): Promise<Customer> {
     return this.customerService.getCustomer(id_cliente);
+  }
+
+  @Post('customerLogin')
+  @ApiOperation({
+    summary: 'Iniciar sesión con cliente',
+    description: 'Este endpoint sirve para iniciar sesión para los clientes',
+  })
+  @ApiBody({
+    description: 'Datos necesarios para iniciar sesión',
+    schema: {
+      type: 'object',
+      properties: {
+        correo_cliente: {
+          type: 'string',
+          example: 'example@gmail.com',
+        },
+        password_cliente: {
+          type: 'string',
+          example: '123456',
+        },
+      },
+    },
+  })
+  customerLogin(@Body() loginDto: CustomerLoginDto) {
+    return this.customerService.customerLogin(loginDto);
   }
 
   @Post()
