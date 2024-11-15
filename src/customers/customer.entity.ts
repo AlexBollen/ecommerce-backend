@@ -24,9 +24,21 @@ export class Customer {
   @ApiProperty()
   correo_cliente: string;
 
+  @Column({ unique: false })
+  @ApiProperty()
+  password_cliente: string;
+
   @Column({ unique: true })
   @ApiProperty()
   direccion_cliente: string;
+
+  @Column({ unique: false })
+  @ApiProperty()
+  municipio_cliente: string;
+
+  @Column({ unique: false })
+  @ApiProperty()
+  departamento_cliente: string;
 
   @Column({ type: 'tinyint', default: 1 })
   @ApiProperty()

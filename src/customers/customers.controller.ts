@@ -79,9 +79,21 @@ export class CustomersController {
           type: 'string',
           example: 'example@gmail.com',
         },
+        password_cliente: {
+          type: 'string',
+          example: '123456',
+        },
         direccion_cliente: {
           type: 'string',
           example: '12 calle 8-5 zona 3',
+        },
+        municipio_cliente: {
+          type: 'string',
+          example: 'Quetzaltenango',
+        },
+        departamento_cliente: {
+          type: 'string',
+          example: 'Quetzaltenango',
         },
       },
     },
