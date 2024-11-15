@@ -17,6 +17,7 @@ import { ProductsModule } from './products/products.module';
 import { StocksModule } from './stocks/stocks.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { DetailQuotesModule } from './detail-quotes/detail-quotes.module';
+import { SalesModule } from './sales/sales.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -59,6 +60,7 @@ import * as Joi from 'joi';
     StocksModule,
     QuotesModule,
     DetailQuotesModule,
+    SalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
