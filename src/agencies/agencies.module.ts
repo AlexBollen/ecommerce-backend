@@ -10,6 +10,6 @@ import { Location } from 'src/locations/location.entity';
   imports: [TypeOrmModule.forFeature([Agency, Location])],
   controllers: [AgenciesController],
   providers: [AgenciesService, LocationsService],
-  exports: [AgenciesService]
+  exports: [AgenciesService],
 })
 export class AgenciesModule {}
