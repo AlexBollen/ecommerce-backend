@@ -40,7 +40,7 @@ export class ProductsController {
     return this.productsService.getAllProducts();
   }
 
-  @Get(':id_producto')
+  @Get('producto/:id_producto')
   @ApiOperation({
     summary: 'Obtener producto',
     description: 'Este endpoint sirve para obtener una producto',
@@ -186,4 +186,5 @@ export class ProductsController {
   deleteProduct(@Param('id_producto', ParseIntPipe) id_producto: number) {
     return this.productsService.deleteProduct(id_producto);
   }
+
 }

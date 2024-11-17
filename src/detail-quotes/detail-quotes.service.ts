@@ -52,4 +52,42 @@ export class DetailQuotesService {
   }
 
   
+  getTopSellingProducts() {
+    return this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock') 
+      .innerJoin('stock.producto', 'producto') 
+      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion') 
+      .select([
+        'producto.id_producto AS id_producto', 
+        'producto.nombre_producto AS nombre_producto', 
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS total_vendido', 
+      ])
+      .groupBy('producto.id_producto, producto.nombre_producto') 
+      .orderBy('total_vendido', 'DESC') 
+      .limit(10) 
+      .getRawMany();
+  }
+
+  getTopSellingProductsAgencies() {
+    return this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock') 
+      .innerJoin('stock.producto', 'producto') 
+      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion') 
+      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .select([
+        'producto.id_producto AS id_producto', 
+        'producto.nombre_producto AS nombre_producto', 
+        'sucursal.nombre_sucursal AS nombre_sucursal', 
+        'SUM(cotizacion.monto_total) AS total_vendido', 
+      ])
+      .groupBy('producto.id_producto, producto.nombre_producto, sucursal.nombre_sucursal') 
+      .orderBy('total_vendido', 'DESC') 
+      .limit(10) 
+      .getRawMany();
+  }
+  
+  
+  
 }
