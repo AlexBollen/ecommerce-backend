@@ -62,7 +62,7 @@ export class StocksController {
     example: '1',
   })
   getStocksByProduct(@Param('id_product', ParseIntPipe) id_product: number) {
-    return this.stocksService.getStocksByProducct(id_product);
+    return this.stocksService.getStocksByProduct(id_product);
   }
 
   @Post()
