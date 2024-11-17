@@ -61,4 +61,23 @@ export class StocksService {
   deleteStock(id_stock: number) {
     return this.stockRepository.update({ id_stock }, { estado: 0 });
   }
+
+
+  getLowQuantityProducts(){
+    return this.stockRepository
+      .createQueryBuilder('stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('stock.sucursal', 'sucursal')
+      .select([
+        'producto.id_producto AS id_producto',
+        'producto.nombre_producto AS nombre_producto',
+        'stock.cantidad_actual AS cantidad_actual',
+        'stock.id_stock AS id_stock',
+        'sucursal.nombre_sucursal AS nombre_sucursal'
+      ])
+      .where('stock.cantidad_actual < :limit', { limit: 10 }) 
+      .orderBy('stock.cantidad_actual', 'DESC') 
+      .limit(20)
+      .getRawMany();
+  }
 }
