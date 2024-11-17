@@ -51,6 +51,32 @@ export class QuotesController {
         monto_total: {
           type: 'number',
           example: '145',
+        },
+        cliente: {
+          type: 'number',
+          example: '1'
+        },
+        sucursal: {
+          type: 'number',
+          example: '1'
+        },
+        usuario: {
+          type: 'number',
+          example: '1'
+        },
+        lista_productos: {
+          type: 'array',
+          items: {
+            type: 'array',
+            items: {
+              type: 'number',
+            },
+          },
+          example: [[1, 3], [2, 5]],
+        },
+        tipo_transaccion: {
+          type: 'boolean',
+          example: 'true'
         }
       },
     },

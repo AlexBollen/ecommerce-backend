@@ -33,7 +33,7 @@ export class StocksService {
     });
   }
 
-  getStocksByProducct(id_product: number) {
+  getStocksByProduct(id_product: number) {
     return this.stockRepository
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.sucursal', 'sucursal')
