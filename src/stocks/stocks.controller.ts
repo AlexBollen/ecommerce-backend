@@ -50,7 +50,7 @@ export class StocksController {
   //   return this.stocksService.getStock(id_stock);
   // }
 
-  @Get(':id_product')
+  @Get('producto/:id_producto')
   @ApiOperation({
     summary: 'Obtener stocks de producto específico',
     description: 'Este endpoint sirve para listar los stocks de un producto',
@@ -138,4 +138,15 @@ export class StocksController {
   deleteStock(@Param('id_stock', ParseIntPipe) id_stock: number) {
     return this.stocksService.deleteStock(id_stock);
   }
+
+
+  @Get('low-quantity')
+  @ApiOperation({
+    summary: 'Obtener los productos más vendidos',
+    description: 'Este endpoint sirve para listar los productos más vendidos',
+  })
+  getLowQuantityProducts() {
+    
+    return this.stocksService.getLowQuantityProducts();
+  } 
 }
