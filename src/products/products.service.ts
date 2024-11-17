@@ -50,4 +50,6 @@ export class ProductsService {
   deleteProduct(id_producto: number) {
     return this.productRepository.update({ id_producto }, { estado: 0 });
   }
+
+  
 }

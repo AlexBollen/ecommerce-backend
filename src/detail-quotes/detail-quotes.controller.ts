@@ -25,7 +25,8 @@ export class DetailQuotesController {
   }
 
 
-  @Get(':id_detalle_cotizacion')
+  
+  @Get('detalle_cotizacion/:id_detalle_cotizacion')
   @ApiOperation({
     summary: 'Obtener un detalle de cotización',
     description: 'Este endpoint sirve para obtener un detalle de cotización',
@@ -111,4 +112,26 @@ export class DetailQuotesController {
   deleteDetailQuote(@Param('id_detalle_cotizacion', ParseIntPipe) id_detalle_cotizacion: number) {
     return this.detailQuotesService.deleteDetailQuote(id_detalle_cotizacion);
   }
+
+
+  @Get('top-selling')
+  @ApiOperation({
+    summary: 'Obtener los productos más vendidos',
+    description: 'Este endpoint sirve para listar los productos más vendidos',
+  })
+  getTopSellingProducts() {
+    
+    return this.detailQuotesService.getTopSellingProducts();
+  } 
+
+
+  @Get('top-selling-agency')
+  @ApiOperation({
+    summary: 'Obtener los productos más vendidos según sucursal',
+    description: 'Este endpoint sirve para listar los productos más vendidos según sucursal',
+  })
+  getTopSellingProductsAgencies() {
+    
+    return this.detailQuotesService.getTopSellingProductsAgencies();
+  } 
 }
