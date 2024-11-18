@@ -80,4 +80,6 @@ export class StocksService {
       .limit(20)
       .getRawMany();
   }
+
+  
 }

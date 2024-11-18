@@ -134,4 +134,42 @@ export class DetailQuotesController {
     
     return this.detailQuotesService.getTopSellingProductsAgencies();
   } 
+
+  
+  @Get('top-product-by-month')
+  @ApiOperation({
+    summary: 'Obtener los productos más vendidos en base al mes',
+    description: 'Este endpoint sirve para listar los productos más vendidos en base al mes',
+  })
+  getProductByMounth() {
+    return this.detailQuotesService.getProductByMonth();
+  } 
+
+  @Get('month-product-summary')
+  @ApiOperation({
+    summary: 'Obtener la cantidad de los productos vendidos en base al mes',
+    description: 'Este endpoint sirve para listar la cantidad de los productos más vendidos en base al mes',
+  })
+  getMonthlyProductSummary() {
+    return this.detailQuotesService.getMonthlyProductSummary();
+  } 
+
+
+  @Get('month-product-summary-agency')
+  @ApiOperation({
+    summary: 'Obtener la cantidad de los productos vendidos en base a la agencia',
+    description: 'Este endpoint sirve para listar la cantidad de los productos más vendidos en base a la agencia',
+  })
+  getMonthlyProductSummaryByAgency() {
+    return this.detailQuotesService.getMonthlyProductSummaryByAgency();
+  } 
+
+  @Get('month-product-summary-general')
+  @ApiOperation({
+    summary: 'Obtener la cantidad de los productos vendidos de forma general',
+    description: 'Este endpoint sirve para listar la cantidad de los productos más vendidos de forma general',
+  })
+  getMonthlyProductByGeneral() {
+    return this.detailQuotesService.getMonthlyProductByGeneral();
+  } 
 }

@@ -149,4 +149,6 @@ export class StocksController {
     
     return this.stocksService.getLowQuantityProducts();
   } 
+
+
 }
