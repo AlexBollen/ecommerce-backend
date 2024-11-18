@@ -35,22 +35,22 @@ export class StocksController {
     return this.stocksService.getAllStocks();
   }
 
-  // @Get(':id_stock')
-  // @ApiOperation({
-  //   summary: 'Obtener stock',
-  //   description: 'Este endpoint sirve para obtener un stock',
-  // })
-  // @ApiParam({
-  //   name: 'id_stock',
-  //   type: Number,
-  //   description: 'Id del stock a obtener',
-  //   example: '1',
-  // })
-  // getStock(@Param('id_stock', ParseIntPipe) id_stock: number): Promise<Stock> {
-  //   return this.stocksService.getStock(id_stock);
-  // }
+  @Get(':id_stock')
+  @ApiOperation({
+    summary: 'Obtener stock',
+    description: 'Este endpoint sirve para obtener un stock',
+  })
+  @ApiParam({
+    name: 'id_stock',
+    type: Number,
+    description: 'Id del stock a obtener',
+    example: '1',
+  })
+  getStock(@Param('id_stock', ParseIntPipe) id_stock: number): Promise<Stock> {
+    return this.stocksService.getStock(id_stock);
+  }
 
-  @Get('producto/:id_producto')
+  @Get('producto/:id_product')
   @ApiOperation({
     summary: 'Obtener stocks de producto específico',
     description: 'Este endpoint sirve para listar los stocks de un producto',
@@ -63,6 +63,21 @@ export class StocksController {
   })
   getStocksByProduct(@Param('id_product', ParseIntPipe) id_product: number) {
     return this.stocksService.getStocksByProduct(id_product);
+  }
+
+  @Get('existencias/:id_producto')
+  @ApiOperation({
+    summary: 'Obtener existencias total producto especifico',
+    description: 'Este endpoint sirve para listar las existencias totales de un producto',
+  })
+  @ApiParam({
+    name: 'id_producto',
+    type: Number,
+    description: 'Id del producto a obtener existencias',
+    example: '1',
+  })
+  getTotalExistences(@Param('id_producto', ParseIntPipe) id_producto: number) {
+    return this.stocksService.getTotalExistences(id_producto);
   }
 
   @Post()
@@ -139,16 +154,12 @@ export class StocksController {
     return this.stocksService.deleteStock(id_stock);
   }
 
-
   @Get('low-quantity')
   @ApiOperation({
     summary: 'Obtener los productos más vendidos',
     description: 'Este endpoint sirve para listar los productos más vendidos',
   })
   getLowQuantityProducts() {
-    
     return this.stocksService.getLowQuantityProducts();
-  } 
-
-
+  }
 }

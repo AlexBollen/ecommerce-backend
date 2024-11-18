@@ -49,6 +49,17 @@ export class StocksService {
       .getRawMany();
   }
 
+  getTotalExistences(id_product: number) {
+    return this.stockRepository
+      .createQueryBuilder('stock')
+      .select(['SUM(stock.cantidad_actual) AS existencias'])
+      .where(
+        'stock.productoIdProducto = :id_product AND stock.estado = 1 AND stock.cantidad_actual > 0',
+        { id_product },
+      )
+      .getRawOne();
+  }
+
   createStock(stock: CreateStockDto) {
     const newStock = this.stockRepository.create(stock);
     this.stockRepository.save(newStock);
@@ -62,8 +73,7 @@ export class StocksService {
     return this.stockRepository.update({ id_stock }, { estado: 0 });
   }
 
-
-  getLowQuantityProducts(){
+  getLowQuantityProducts() {
     return this.stockRepository
       .createQueryBuilder('stock')
       .innerJoin('stock.producto', 'producto')
@@ -73,10 +83,10 @@ export class StocksService {
         'producto.nombre_producto AS nombre_producto',
         'stock.cantidad_actual AS cantidad_actual',
         'stock.id_stock AS id_stock',
-        'sucursal.nombre_sucursal AS nombre_sucursal'
+        'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
-      .where('stock.cantidad_actual < :limit', { limit: 10 }) 
-      .orderBy('stock.cantidad_actual', 'DESC') 
+      .where('stock.cantidad_actual < :limit', { limit: 10 })
+      .orderBy('stock.cantidad_actual', 'DESC')
       .limit(20)
       .getRawMany();
   }
