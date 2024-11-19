@@ -12,8 +12,26 @@ export class RolesService {
     private roleRepository: Repository<Role>,
   ) {}
 
-  getAllRoles() {
-    return this.roleRepository.find();
+  async getAllRoles(page: number, limit: number) {
+    const queryBuilder = this.roleRepository
+      .createQueryBuilder('rol')
+      .where('rol.estado = true')
+      .select(['rol.id_rol', 'rol.nombre_rol', 'rol.descripcion_rol']);
+
+    const total = await queryBuilder.getCount();
+    const roles = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: roles,
+      total,
+      currentPage: page,
+      totalPages,
+    };
   }
 
   getRole(id_rol: number) {

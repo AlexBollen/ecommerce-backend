@@ -1,14 +1,22 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RolesService } from './roles.service';
 import { Role } from './role.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -21,11 +29,32 @@ export class RolesController {
 
   @Get()
   @ApiOperation({
-    summary: 'Obtener roles',
-    description: 'Este endpoint sirve para listar todos los roles',
+    summary: 'Obtener todos los roles activos con paginación',
+    description:
+      'Este endpoint lista los roles activos con soporte para paginación',
   })
-  getAllRoles(): Promise<Role[]> {
-    return this.roleService.getAllRoles();
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  getAllRoles(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<{
+    data: any[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    return this.roleService.getAllRoles(page, limit);
   }
 
   @Get(':id_rol')
