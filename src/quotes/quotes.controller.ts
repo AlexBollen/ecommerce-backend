@@ -148,8 +148,16 @@ export class QuotesController {
     summary: 'Obtener los clientes que compran más seguido en base a la sucursal',
     description: 'Este endpoint sirve para listar los clientes que comprarn más seguido según la sucursal ',
   })
-  getBestCustomersAgency() {
-    
+  getBestCustomersAgency() {  
     return this.quotesService.getBestCustomersAgency();
+  } 
+
+  @Get('sale-by-date')
+  @ApiOperation({
+    summary: 'Obtenie las ventas segun el rango de fechas',
+    description: 'Este endpoint sirve para listar todas las ventas en base al rango ingresado',
+  })
+  getSaleByDate() {  
+    return this.quotesService.getSaleByDate();
   } 
 }
