@@ -136,5 +136,26 @@ export class QuotesService {
       .getRawMany();
   }
   
+
+  getSaleByDate() {
+    return this.quoteRepository
+      .createQueryBuilder('cotizacion')
+      .innerJoin('cotizacion.cliente', 'cliente')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
+      .select([
+        'cliente.nombre_cliente AS nombre_cliente',
+        'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+      ])
+      .where('cotizacion.created_at >= :startDate AND cotizacion.created_at <= :endDate', { 
+        startDate: '2024-01-01', 
+        endDate: '2024-11-18' 
+      })
+      .groupBy('cliente.nombre_cliente')
+      .addGroupBy('sucursal.nombre_sucursal')
+      .orderBy('cantidad_compras', 'DESC')
+      .getRawMany();
+  }
+  
   
 }
