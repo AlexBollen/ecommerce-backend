@@ -37,7 +37,7 @@ export class CustomersController {
     return this.customerService.getAllCustomers();
   }
 
-  @Get(':id_cliente')
+  @Get('cliente/:id_cliente')
   @ApiOperation({
     summary: 'Obtener cliente',
     description: 'Este endpoint sirve para obtener un cliente',

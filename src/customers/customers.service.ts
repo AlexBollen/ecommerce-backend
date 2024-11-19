@@ -64,4 +64,5 @@ export class CustomersService {
   deleteCustomer(id_cliente: number) {
     return this.customerRepository.update({ id_cliente }, { estado: 0 });
   }
+
 }

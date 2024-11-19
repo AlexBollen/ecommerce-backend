@@ -100,4 +100,41 @@ export class QuotesService {
   deleteQuote(id_cotizacion: number) {
     return this.quoteRepository.update({ id_cotizacion }, { estado: 0 });
   }
+
+  getBestCustomersGeneral() {
+    return this.quoteRepository
+      .createQueryBuilder('cotizacion')
+      .innerJoin('cotizacion.cliente', 'cliente') 
+      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .select([
+        'cliente.nombre_cliente AS nombre_cliente',
+        'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+      ])
+      .groupBy('cliente.nombre_cliente') 
+      .addGroupBy('sucursal.nombre_sucursal') 
+      .orderBy('cantidad_compras', 'DESC') 
+      .limit(10)
+      .getRawMany();
+  }
+
+  getBestCustomersAgency() {
+    return this.quoteRepository
+      .createQueryBuilder('cotizacion')
+      .innerJoin('cotizacion.cliente', 'cliente') 
+      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .select([
+        'cliente.nombre_cliente AS nombre_cliente',
+        'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+      ])
+      .where('sucursal.id_sucursal = 1')
+      .groupBy('cliente.nombre_cliente') 
+      .addGroupBy('sucursal.nombre_sucursal') 
+      .orderBy('cantidad_compras', 'DESC') 
+      .limit(10)
+      .getRawMany();
+  }
+  
+  
 }

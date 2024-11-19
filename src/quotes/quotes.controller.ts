@@ -20,7 +20,7 @@ export class QuotesController {
   }
 
 
-  @Get(':id_cotizacion')
+  @Get('cotizacion/:id_cotizacion')
   @ApiOperation({
     summary: 'Obtener cotización',
     description: 'Este endpoint sirve para obtener una cotización',
@@ -131,4 +131,25 @@ export class QuotesController {
   deleteQuote(@Param('id_cotizacion', ParseIntPipe) id_cotizacion: number) {
     return this.quotesService.deleteQuote(id_cotizacion);
   }
+
+
+  @Get('best-customer-general')
+  @ApiOperation({
+    summary: 'Obtener los clientes que compran más seguido de forma general',
+    description: 'Este endpoint sirve para listar los clientes que comprarn más seguido ',
+  })
+  getBestCustomersGeneral() {
+    
+    return this.quotesService.getBestCustomersGeneral();
+  } 
+
+  @Get('best-customer-agency')
+  @ApiOperation({
+    summary: 'Obtener los clientes que compran más seguido en base a la sucursal',
+    description: 'Este endpoint sirve para listar los clientes que comprarn más seguido según la sucursal ',
+  })
+  getBestCustomersAgency() {
+    
+    return this.quotesService.getBestCustomersAgency();
+  } 
 }
