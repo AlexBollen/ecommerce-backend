@@ -160,4 +160,22 @@ export class QuotesController {
   getSaleByDate() {  
     return this.quotesService.getSaleByDate();
   } 
+
+  @Get('historical-sales-general')
+  @ApiOperation({
+    summary: 'Obtiene los cambios que se realizan en las facturas',
+    description: 'Este endpoint sirve para listar los cambios de las facturas',
+  })
+  getHistoricalSales() {  
+    return this.quotesService.getHistoricalSales();
+  } 
+
+  @Get('historical-sales-agency')
+  @ApiOperation({
+    summary: 'Obtiene los cambios que se realizan en las facturas en base a la agencia',
+    description: 'Este endpoint sirve para listar los cambios de las facturas en base a la agencia',
+  })
+  getHistoricalSalesByAgency() {  
+    return this.quotesService.getHistoricalSalesByAgency();
+  } 
 }

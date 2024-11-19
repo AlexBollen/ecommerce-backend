@@ -157,5 +157,47 @@ export class QuotesService {
       .getRawMany();
   }
   
+  getHistoricalSales() { 
+    return this.quoteRepository
+      .createQueryBuilder('cotizacion') 
+      .innerJoin('cotizacion.cliente', 'cliente') 
+      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .innerJoin('cotizacion.usuario', 'usuario') 
+      .select([
+        'usuario.nombre_persona AS nombre_persona',
+        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha", 
+        'TIME(cotizacion.created_at) AS hora', 
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+      ])
+      .groupBy('usuario.nombre_persona')
+      .addGroupBy('fecha') 
+      .addGroupBy('hora') 
+      .addGroupBy('sucursal.nombre_sucursal')
+      .orderBy('fecha', 'DESC') 
+      .getRawMany(); 
+  }
+
+  getHistoricalSalesByAgency() { 
+    return this.quoteRepository
+      .createQueryBuilder('cotizacion') 
+      .innerJoin('cotizacion.cliente', 'cliente') 
+      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .innerJoin('cotizacion.usuario', 'usuario') 
+      .select([
+        'usuario.nombre_persona AS nombre_persona',
+        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha", 
+        'TIME(cotizacion.created_at) AS hora', 
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+      ])
+      .where('sucursal.id_sucursal = 1')
+      .groupBy('usuario.nombre_persona')
+      .addGroupBy('fecha') 
+      .addGroupBy('hora') 
+      .addGroupBy('sucursal.nombre_sucursal')
+      .orderBy('fecha', 'DESC') 
+      .getRawMany(); 
+  }
+  
+  
   
 }
