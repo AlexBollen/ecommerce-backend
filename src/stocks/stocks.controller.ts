@@ -35,7 +35,7 @@ export class StocksController {
     return this.stocksService.getAllStocks();
   }
 
-  @Get(':id_stock')
+  @Get('stock/:id_stock')
   @ApiOperation({
     summary: 'Obtener stock',
     description: 'Este endpoint sirve para obtener un stock',
@@ -156,8 +156,8 @@ export class StocksController {
 
   @Get('low-quantity')
   @ApiOperation({
-    summary: 'Obtener los productos más vendidos',
-    description: 'Este endpoint sirve para listar los productos más vendidos',
+    summary: 'Obtener los productos con menor cantidad',
+    description: 'Este endpoint sirve para listar los productos con menor cantidad',
   })
   getLowQuantityProducts() {
     return this.stocksService.getLowQuantityProducts();
