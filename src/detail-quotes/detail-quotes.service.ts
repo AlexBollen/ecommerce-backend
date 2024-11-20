@@ -148,7 +148,7 @@ export class DetailQuotesService {
       .getRawMany();
   }
 
-  getMonthlyProductSummaryByAgency() {
+  getMonthlyProductSummaryByAgency(id_sucursal: number) {
     return this.detailQuoteRepository
       .createQueryBuilder('detalle_cotizacion')
       .innerJoin('detalle_cotizacion.stock', 'stock')
@@ -162,7 +162,7 @@ export class DetailQuotesService {
         'MONTH(quote.created_at) AS nm',
         'YEAR(quote.created_at) AS ny',
       ])
-      .where('sucursal.id_sucursal = :sucursalId', { sucursalId: 1 })
+      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
       .groupBy('producto.id_producto')
       .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
       .addGroupBy('MONTH(quote.created_at)')

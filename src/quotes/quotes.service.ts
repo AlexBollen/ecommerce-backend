@@ -118,7 +118,7 @@ export class QuotesService {
       .getRawMany();
   }
 
-  getBestCustomersAgency() {
+  getBestCustomersAgency(id_sucursal: number) {
     return this.quoteRepository
       .createQueryBuilder('cotizacion')
       .innerJoin('cotizacion.cliente', 'cliente') 
@@ -128,7 +128,7 @@ export class QuotesService {
         'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
-      .where('sucursal.id_sucursal = 1')
+      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
       .groupBy('cliente.nombre_cliente') 
       .addGroupBy('sucursal.nombre_sucursal') 
       .orderBy('cantidad_compras', 'DESC') 
@@ -177,7 +177,7 @@ export class QuotesService {
       .getRawMany(); 
   }
 
-  getHistoricalSalesByAgency() { 
+  getHistoricalSalesByAgency(id_sucursal: number) { 
     return this.quoteRepository
       .createQueryBuilder('cotizacion') 
       .innerJoin('cotizacion.cliente', 'cliente') 
@@ -189,7 +189,7 @@ export class QuotesService {
         'TIME(cotizacion.created_at) AS hora', 
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
-      .where('sucursal.id_sucursal = 1')
+      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
       .groupBy('usuario.nombre_persona')
       .addGroupBy('fecha') 
       .addGroupBy('hora') 

@@ -160,13 +160,19 @@ export class DetailQuotesController {
   } 
 
 
-  @Get('month-product-summary-agency')
+  @Get('month-product-summary-agency/:id_sucursal')
   @ApiOperation({
     summary: 'Obtener la cantidad de los productos vendidos en base a la agencia',
     description: 'Este endpoint sirve para listar la cantidad de los productos más vendidos en base a la agencia',
   })
-  getMonthlyProductSummaryByAgency() {
-    return this.detailQuotesService.getMonthlyProductSummaryByAgency();
+  @ApiParam({
+    name: 'id_sucursal',
+    type: 'number',
+    description: 'Id de la sucursal a filtrar',
+    example: '1',
+  })
+  getMonthlyProductSummaryByAgency(@Param('id_sucursal') id_sucursal: number) {
+    return this.detailQuotesService.getMonthlyProductSummaryByAgency(id_sucursal);
   } 
 
   @Get('month-product-summary-general')
