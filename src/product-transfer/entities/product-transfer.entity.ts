@@ -24,6 +24,10 @@ export class ProductTransfer {
   @ApiProperty()
   descripcion_transferencia: string;
 
+  @Column({ nullable: false })
+  @ApiProperty()
+  sucursal_Saliente: number;
+
   @Column({ type: 'tinyint', default: 1 })
   @ApiProperty()
   estado: number;
@@ -49,7 +53,7 @@ export class ProductTransfer {
   id_estado_transferencia: TransferState;
 
   @ManyToOne(() => Agency, (agency) => agency.TransferenciaProducto)
-  @JoinColumn({ name: 'sucursal_entrante' })
+  @JoinColumn({ name: 'sucursal_Entrante' })
   sucursal_Entrante: Agency;
 
   @ManyToOne(() => User, (user) => user.TransferenciaProducto)

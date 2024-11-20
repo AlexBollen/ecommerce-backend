@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransferDetailDto } from './dto/create-transfer-detail.dto';
 import { UpdateTransferDetailDto } from './dto/update-transfer-detail.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TransferDetail } from './entities/transfer-detail.entity';
+import { Repository } from 'typeorm';
+import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
 
 @Injectable()
 export class TransferDetailService {
-  create(createTransferDetailDto: CreateTransferDetailDto) {
-    return 'This action adds a new transferDetail';
+  constructor(
+    @InjectRepository(TransferDetail)
+    private transferDetailRepository: Repository<TransferDetail>,
+  ) {}
+
+  createTransferDetail(transferDetail: CreateTransferDetailDto) {
+    const newTransferDetail =
+      this.transferDetailRepository.create(transferDetail);
+    this.transferDetailRepository.save(newTransferDetail);
   }
 
-  findAll() {
-    return `This action returns all transferDetail`;
+  getTransferDetail(id_detalle_transferencia: number) {
+    return this.transferDetailRepository.find({
+      where: { id_detalle_transferencia },
+      relations: ['id_stock', 'id_stock.producto'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transferDetail`;
-  }
+  async getFormattedTransferDetails(id_transferencia: ProductTransfer) {
+    const detalles = await this.transferDetailRepository.find({
+      where: { id_transferencia },
+      relations: ['id_stock', 'id_stock.producto'], // Incluye la relación hacia `Producto`
+    });
+    //console.log(detalles);
 
-  update(id: number, updateTransferDetailDto: UpdateTransferDetailDto) {
-    return `This action updates a #${id} transferDetail`;
-  }
+    if (!detalles.length) {
+      throw new NotFoundException(
+        `No se encontraron detalles para la transferencia con id ${id_transferencia}`,
+      );
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} transferDetail`;
+    return detalles.map((detalle) => ({
+      id_detalle_transferencia: detalle.id_detalle_transferencia,
+      cantidad_transferida: detalle.cantidad_transferencia,
+      nombre_producto: detalle.id_stock.producto.nombre_producto, // Acceso al nombre del producto
+      cantidad_actual: detalle.id_stock.cantidad_actual,
+      created_at: detalle.created_at,
+    }));
   }
 }

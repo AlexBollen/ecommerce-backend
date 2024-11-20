@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsInt,
   IsString,
@@ -7,7 +8,10 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { Agency } from 'src/agencies/agency.entity';
 import { CreateTransferDetailDto } from 'src/transfer-detail/dto/create-transfer-detail.dto';
+import { TransferState } from 'src/transfer-states/transfer-state.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateProductTransferDto {
   @IsString()
@@ -16,22 +20,22 @@ export class CreateProductTransferDto {
 
   @IsInt()
   @Min(1)
-  sucursal_saliente: number;
+  sucursal_Saliente: number;
 
   @IsInt()
   @Min(1)
-  sucursal_Entrante: number;
+  sucursal_Entrante: Agency;
 
   @IsInt()
   @Min(1)
-  id_estado_transferencia: number;
+  id_estado_transferencia: TransferState;
 
   @IsInt()
   @Min(1)
-  id_usuario: number;
+  id_usuario: User;
 
   @IsArray()
-  @ValidateNested({ each: true })
+  @ArrayNotEmpty()
   @Type(() => CreateTransferDetailDto)
   detalles: CreateTransferDetailDto[];
 }
