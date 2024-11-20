@@ -143,13 +143,19 @@ export class QuotesController {
     return this.quotesService.getBestCustomersGeneral();
   } 
 
-  @Get('best-customer-agency')
+  @Get('best-customer-agency/:id_sucursal')
   @ApiOperation({
     summary: 'Obtener los clientes que compran más seguido en base a la sucursal',
     description: 'Este endpoint sirve para listar los clientes que comprarn más seguido según la sucursal ',
   })
-  getBestCustomersAgency() {  
-    return this.quotesService.getBestCustomersAgency();
+  @ApiParam({
+    name: 'id_sucursal',
+    type: 'number',
+    description: 'Id de la sucursal a filtrar',
+    example: '1',
+  })
+  getBestCustomersAgency(@Param('id_sucursal') id_sucursal: number) {  
+    return this.quotesService.getBestCustomersAgency(id_sucursal);
   } 
 
   @Get('sale-by-date')
@@ -170,12 +176,18 @@ export class QuotesController {
     return this.quotesService.getHistoricalSales();
   } 
 
-  @Get('historical-sales-agency')
+  @Get('historical-sales-agency/:id_sucursal')
   @ApiOperation({
     summary: 'Obtiene los cambios que se realizan en las facturas en base a la agencia',
     description: 'Este endpoint sirve para listar los cambios de las facturas en base a la agencia',
   })
-  getHistoricalSalesByAgency() {  
-    return this.quotesService.getHistoricalSalesByAgency();
+  @ApiParam({
+    name: 'id_sucursal',
+    type: 'number',
+    description: 'Id de la sucursal a filtrar',
+    example: '1',
+  })
+  getHistoricalSalesByAgency(@Param('id_sucursal') id_sucursal: number) {  
+    return this.quotesService.getHistoricalSalesByAgency(id_sucursal);
   } 
 }
