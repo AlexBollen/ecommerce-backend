@@ -55,11 +55,13 @@ export class AuthService {
     const role = await this.roleService.getRole(user.id_rol);
     const payload = { sub: user.id_usuario, username: user.username, role: user.id_rol };
     const token = await this.jwtService.signAsync(payload);
+    const agency_employee = 1
     return {
       token,
       sub: user.id_usuario,
       name: user.nombre_persona,
       role: role.nombre_rol,
+      agency_employee: agency_employee
     };
   }
 }

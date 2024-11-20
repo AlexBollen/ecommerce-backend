@@ -60,6 +60,28 @@ export class StocksService {
       .getRawOne();
   }
 
+  async getRelatedStocks(id_producto: number, id_sucursal: number) {
+    return await this.stockRepository
+      .createQueryBuilder('stock')
+      .where('stock.producto = :producto', { producto: id_producto })
+      .andWhere('stock.sucursal = :sucursal', { sucursal: id_sucursal })
+      .getMany();
+  }
+
+  async getSumRelatedStocks(
+    id_producto: number,
+    id_sucursal: number,
+  ): Promise<number> {
+    const result = await this.stockRepository
+      .createQueryBuilder('stock')
+      .select('SUM(stock.cantidad_actual)', 'sum')
+      .where('stock.producto = :producto', { producto: id_producto })
+      .andWhere('stock.sucursal = :sucursal', { sucursal: id_sucursal })
+      .getRawOne();
+
+    return result.sum ? Number(result.sum) : 0;
+  }
+
   createStock(stock: CreateStockDto) {
     const newStock = this.stockRepository.create(stock);
     this.stockRepository.save(newStock);
@@ -90,6 +112,4 @@ export class StocksService {
       .limit(20)
       .getRawMany();
   }
-
-  
 }

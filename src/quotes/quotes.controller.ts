@@ -75,6 +75,10 @@ export class QuotesController {
           example: [[1, 3], [2, 5]],
         },
         tipo_transaccion: {
+          type: 'string',
+          example: 'V'
+        },
+        tipo: {
           type: 'boolean',
           example: 'true'
         }
