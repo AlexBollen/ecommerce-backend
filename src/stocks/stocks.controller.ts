@@ -9,6 +9,7 @@ import {
   ApiResponse,
   ApiTags,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import {
   Body,
@@ -19,6 +20,8 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 
 @ApiTags('Stocks')
@@ -68,7 +71,8 @@ export class StocksController {
   @Get('existencias/:id_producto')
   @ApiOperation({
     summary: 'Obtener existencias total producto especifico',
-    description: 'Este endpoint sirve para listar las existencias totales de un producto',
+    description:
+      'Este endpoint sirve para listar las existencias totales de un producto',
   })
   @ApiParam({
     name: 'id_producto',
@@ -78,6 +82,31 @@ export class StocksController {
   })
   getTotalExistences(@Param('id_producto', ParseIntPipe) id_producto: number) {
     return this.stocksService.getTotalExistences(id_producto);
+  }
+
+  @Get('existencias_sucursal')
+  @ApiOperation({
+    summary: 'Obtener total de existencias de producto por sucursal',
+    description:
+      'Este endpoint obtiene el total de existencias de producto por sucursal',
+  })
+  @ApiQuery({
+    name: 'id_producto',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'id_sucursal',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  getAllRoles(
+    @Query('id_producto', new DefaultValuePipe(10), ParseIntPipe) id_producto: number,
+    @Query('id_sucursal', new DefaultValuePipe(10), ParseIntPipe) id_sucursal: number,
+  ) {
+    return this.stocksService.getSumRelatedStocks(id_producto, id_sucursal);
   }
 
   @Post()
@@ -157,7 +186,8 @@ export class StocksController {
   @Get('low-quantity')
   @ApiOperation({
     summary: 'Obtener los productos con menor cantidad',
-    description: 'Este endpoint sirve para listar los productos con menor cantidad',
+    description:
+      'Este endpoint sirve para listar los productos con menor cantidad',
   })
   getLowQuantityProducts() {
     return this.stocksService.getLowQuantityProducts();
