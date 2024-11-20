@@ -7,12 +7,11 @@ import { UpdateDetailQuoteDto } from './dto/update-detail-quote.dto';
 
 @Injectable()
 export class DetailQuotesService {
-
   constructor(
     @InjectRepository(DetailQuote)
     private detailQuoteRepository: Repository<DetailQuote>,
   ) {}
- 
+
   getAllDetailQuotes() {
     return this.detailQuoteRepository
       .createQueryBuilder('detalle_cotizacion')
@@ -21,7 +20,6 @@ export class DetailQuotesService {
       .select([
         'detalle_cotizacion.id_detalle_cotizacion AS id_detalleCotizacion',
         'detalle_cotizacion.cantidad_solicitada AS cantidad_solicitada',
-       
       ])
       .where('detalle_cotizacion.estado = 1')
       .getRawMany();
@@ -40,7 +38,10 @@ export class DetailQuotesService {
     this.detailQuoteRepository.save(newDetailQuote);
   }
 
-  updateDetailQuote(id_detalle_cotizacion: number, detailQuote: UpdateDetailQuoteDto) {
+  updateDetailQuote(
+    id_detalle_cotizacion: number,
+    detailQuote: UpdateDetailQuoteDto,
+  ) {
     return this.detailQuoteRepository.update(
       { id_detalle_cotizacion: id_detalle_cotizacion },
       detailQuote,
@@ -48,46 +49,51 @@ export class DetailQuotesService {
   }
 
   deleteDetailQuote(id_detalle_cotizacion: number) {
-    return this.detailQuoteRepository.update({ id_detalle_cotizacion }, { estado: 0 });
+    return this.detailQuoteRepository.update(
+      { id_detalle_cotizacion },
+      { estado: 0 },
+    );
   }
 
-  
   getTopSellingProducts() {
     return this.detailQuoteRepository
       .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock') 
-      .innerJoin('stock.producto', 'producto') 
-      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion') 
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion')
       .select([
-        'producto.id_producto AS id_producto', 
-        'producto.nombre_producto AS nombre_producto', 
-        'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido', 
+        'producto.id_producto AS id_producto',
+        'producto.nombre_producto AS nombre_producto',
+        'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
       ])
-      .groupBy('producto.id_producto, producto.nombre_producto') 
-      .orderBy('total_vendido', 'DESC') 
-      .limit(10) 
+      .groupBy('producto.id_producto, producto.nombre_producto')
+      .orderBy('total_vendido', 'DESC')
+      .limit(10)
       .getRawMany();
   }
 
-  getTopSellingProductsAgencies() {
+  getTopSellingProductsAgencies(id_sucursal: number) {
     return this.detailQuoteRepository
       .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock') 
-      .innerJoin('stock.producto', 'producto') 
-      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion') 
-      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'cotizacion')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
       .select([
-        'producto.id_producto AS id_producto', 
-        'producto.nombre_producto AS nombre_producto', 
-        'sucursal.nombre_sucursal AS nombre_sucursal', 
-        'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido', 
+        'producto.id_producto AS id_producto',
+        'producto.nombre_producto AS nombre_producto',
+        'sucursal.nombre_sucursal AS nombre_sucursal',
+        'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
       ])
-      .groupBy('producto.id_producto, producto.nombre_producto, sucursal.nombre_sucursal') 
-      .orderBy('total_vendido', 'DESC') 
-      .limit(10) 
+      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
+      .groupBy(
+        'producto.id_producto, producto.nombre_producto, sucursal.nombre_sucursal',
+      )
+      .orderBy('total_vendido', 'DESC')
+      .limit(10)
       .getRawMany();
   }
-  
+
   getProductByMonth() {
     const subQuery = this.detailQuoteRepository
         .createQueryBuilder('detalle_cotizacion')
@@ -118,82 +124,76 @@ export class DetailQuotesService {
         .orderBy('ranked.nm', 'ASC')  
         .addOrderBy('ranked.mes', 'ASC')  
         .getRawMany();
-}
+  }
 
-getMonthlyProductSummary() {
-  return this.detailQuoteRepository
-    .createQueryBuilder('detalle_cotizacion')
-    .innerJoin('detalle_cotizacion.stock', 'stock')
-    .innerJoin('stock.producto', 'producto')
-    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-    .select([
-      'producto.nombre_producto AS nombre_producto',
-      "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
-      'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
-      'MONTH(quote.created_at) AS nm',
-      'YEAR(quote.created_at) AS ny',
-    ])
-    .groupBy('producto.id_producto')
-    .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-    .addGroupBy('MONTH(quote.created_at)')
-    .addGroupBy('YEAR(quote.created_at)')
-    .orderBy('YEAR(quote.created_at)', 'ASC')
-    .addOrderBy('MONTH(quote.created_at)', 'ASC')
-    .getRawMany();
-}
+  getMonthlyProductSummary() {
+    return this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+      .select([
+        'producto.nombre_producto AS nombre_producto',
+        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'MONTH(quote.created_at) AS nm',
+        'YEAR(quote.created_at) AS ny',
+      ])
+      .groupBy('producto.id_producto')
+      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
+      .addGroupBy('MONTH(quote.created_at)')
+      .addGroupBy('YEAR(quote.created_at)')
+      .orderBy('YEAR(quote.created_at)', 'ASC')
+      .addOrderBy('MONTH(quote.created_at)', 'ASC')
+      .getRawMany();
+  }
 
-getMonthlyProductSummaryByAgency() {
-  return this.detailQuoteRepository
-    .createQueryBuilder('detalle_cotizacion')
-    .innerJoin('detalle_cotizacion.stock', 'stock')
-    .innerJoin('stock.sucursal', 'sucursal')
-    .innerJoin('stock.producto', 'producto')
-    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-    .select([
-      'producto.nombre_producto AS nombre_producto',
-      "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
-      'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
-      'MONTH(quote.created_at) AS nm',
-      'YEAR(quote.created_at) AS ny',
-    ])
-    .where('sucursal.id_sucursal = :sucursalId', { sucursalId: 1 })
-    .groupBy('producto.id_producto')
-    .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-    .addGroupBy('MONTH(quote.created_at)')
-    .addGroupBy('YEAR(quote.created_at)')
-    .orderBy('cantidad', 'DESC')
-    .addOrderBy('YEAR(quote.created_at)', 'ASC')
-    .addOrderBy('MONTH(quote.created_at)', 'ASC')
-    .getRawMany();
-}
+  getMonthlyProductSummaryByAgency() {
+    return this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.sucursal', 'sucursal')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+      .select([
+        'producto.nombre_producto AS nombre_producto',
+        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'MONTH(quote.created_at) AS nm',
+        'YEAR(quote.created_at) AS ny',
+      ])
+      .where('sucursal.id_sucursal = :sucursalId', { sucursalId: 1 })
+      .groupBy('producto.id_producto')
+      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
+      .addGroupBy('MONTH(quote.created_at)')
+      .addGroupBy('YEAR(quote.created_at)')
+      .orderBy('cantidad', 'DESC')
+      .addOrderBy('YEAR(quote.created_at)', 'ASC')
+      .addOrderBy('MONTH(quote.created_at)', 'ASC')
+      .getRawMany();
+  }
 
-
-
-getMonthlyProductByGeneral() {
-  return this.detailQuoteRepository
-    .createQueryBuilder('detalle_cotizacion')
-    .innerJoin('detalle_cotizacion.stock', 'stock')
-    .innerJoin('stock.producto', 'producto')
-    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-    .select([
-      'producto.nombre_producto AS nombre_producto',
-      "DATE_FORMAT(quote.created_at, '%M %Y') AS mes", 
-      'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad', 
-      'MONTH(quote.created_at) AS nm', 
-      'YEAR(quote.created_at) AS ny',
-    ])
-    .groupBy('producto.id_producto')
-    .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-    .addGroupBy('MONTH(quote.created_at)')
-    .addGroupBy('YEAR(quote.created_at)')
-    .orderBy('cantidad', 'DESC') 
-    .addOrderBy('producto.nombre_producto', 'ASC') 
-    .addOrderBy('MONTH(quote.created_at)', 'ASC') 
-    .addOrderBy('YEAR(quote.created_at)', 'ASC') 
-    .getRawMany(); 
-}
-
-
-
-  
+  getMonthlyProductByGeneral() {
+    return this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+      .select([
+        'producto.nombre_producto AS nombre_producto',
+        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'MONTH(quote.created_at) AS nm',
+        'YEAR(quote.created_at) AS ny',
+      ])
+      .groupBy('producto.id_producto')
+      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
+      .addGroupBy('MONTH(quote.created_at)')
+      .addGroupBy('YEAR(quote.created_at)')
+      .orderBy('cantidad', 'DESC')
+      .addOrderBy('producto.nombre_producto', 'ASC')
+      .addOrderBy('MONTH(quote.created_at)', 'ASC')
+      .addOrderBy('YEAR(quote.created_at)', 'ASC')
+      .getRawMany();
+  }
 }

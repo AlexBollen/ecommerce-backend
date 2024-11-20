@@ -125,14 +125,19 @@ export class DetailQuotesController {
   } 
 
 
-  @Get('top-selling-agency')
+  @Get('top-selling-agency/:id_sucursal')
   @ApiOperation({
     summary: 'Obtener los productos más vendidos según sucursal',
     description: 'Este endpoint sirve para listar los productos más vendidos según sucursal',
   })
-  getTopSellingProductsAgencies() {
-    
-    return this.detailQuotesService.getTopSellingProductsAgencies();
+  @ApiParam({
+    name: 'id_sucursal',
+    type: 'number',
+    description: 'Id de la sucursal a filtrar',
+    example: '1',
+  })
+  getTopSellingProductsAgencies(@Param('id_sucursal') id_sucursal: number) {
+    return this.detailQuotesService.getTopSellingProductsAgencies(id_sucursal);
   } 
 
   
