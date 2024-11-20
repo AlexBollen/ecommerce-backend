@@ -88,23 +88,36 @@ export class DetailQuotesService {
       .getRawMany();
   }
   
-  
-
   getProductByMonth() {
+    const subQuery = this.detailQuoteRepository
+        .createQueryBuilder('detalle_cotizacion')
+        .innerJoin('detalle_cotizacion.stock', 'stock')
+        .innerJoin('stock.producto', 'producto')
+        .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+        .select([
+            'producto.nombre_producto AS nombre_producto',
+            'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
+            'MONTH(quote.created_at) AS nm',
+            'SUM(quote.monto_total) AS total_vendido',
+            'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(quote.monto_total) DESC) AS ranking'
+        ])
+        .groupBy('producto.id_producto, mes, nm')
+        .getQuery(); 
+
     return this.detailQuoteRepository
-      .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock') 
-      .innerJoin('stock.producto', 'producto') 
-      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-      .select([
-        'producto.nombre_producto AS nombre_producto', 
-        'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',  
-        'SUM(quote.monto_total) AS total_vendido',
-        'MONTH(quote.created_at) AS NM'
-      ])
-      .groupBy('producto.id_producto, mes, NM')
-      .orderBy('NM', 'ASC')
-      .getRawMany();
+        .createQueryBuilder('ranked') 
+        .addFrom(`(${subQuery})`, 'ranked')  
+        .where('ranked.ranking = 1') 
+        .select([
+            'ranked.nombre_producto',
+            'ranked.mes',
+            'ranked.total_vendido',
+            'ranked.nm' 
+        ])
+        .distinct(true)  
+        .orderBy('ranked.nm', 'ASC')  
+        .addOrderBy('ranked.mes', 'ASC')  
+        .getRawMany();
 }
 
 getMonthlyProductSummary() {
