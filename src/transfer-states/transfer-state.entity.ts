@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
 
 @Entity({ name: 'estado_transferencia' })
 export class TransferState {
@@ -22,4 +23,10 @@ export class TransferState {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty()
   updated_at: Date;
+
+  @OneToMany(
+    () => ProductTransfer,
+    (producttransfer) => producttransfer.id_estado_transferencia,
+  )
+  TransferenciaProductos: ProductTransfer[];
 }

@@ -1,8 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Location } from 'src/locations/location.entity';
-import {Stock} from 'src/stocks/entities/stock.entity';
+import { Stock } from 'src/stocks/entities/stock.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
+import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
 
 @Entity({ name: 'sucursal' })
 export class Agency {
@@ -38,14 +46,20 @@ export class Agency {
   @ApiProperty()
   updated_at: Date;
 
-  @OneToOne(() => Location, { nullable: true})
+  @OneToOne(() => Location, { nullable: true })
   @JoinColumn()
   @ApiProperty()
-  ubicacion: Location
+  ubicacion: Location;
 
   @OneToMany(() => Stock, (stock) => stock.sucursal)
-  stocks: Stock[]
+  stocks: Stock[];
 
   @OneToMany(() => Quote, (quote) => quote.sucursal)
-  cotizaciones: Quote[]
+  cotizaciones: Quote[];
+
+  @OneToMany(
+    () => ProductTransfer,
+    (producttransfer) => producttransfer.sucursal_Entrante,
+  )
+  TransferenciaProducto: [];
 }

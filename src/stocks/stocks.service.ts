@@ -40,6 +40,7 @@ export class StocksService {
       .select([
         'sucursal.nombre_sucursal AS sucursal',
         'SUM(stock.cantidad_actual) AS existencias',
+        'GROUP_CONCAT(stock.id_stock) AS id_stock',
       ])
       .where(
         'stock.productoIdProducto = :id_product AND stock.estado = 1 AND stock.cantidad_actual > 0',
