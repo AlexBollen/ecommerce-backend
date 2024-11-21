@@ -104,8 +104,8 @@ export class DetailQuotesService {
             'producto.nombre_producto AS nombre_producto',
             'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
             'MONTH(quote.created_at) AS nm',
-            'SUM(quote.monto_total) AS total_vendido',
-            'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(quote.monto_total) DESC) AS ranking'
+            'SUM(detalle_cotizacion.cantidad_solicitada) AS total_vendido',
+            'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
         ])
         .groupBy('producto.id_producto, mes, nm')
         .getQuery(); 
@@ -127,73 +127,91 @@ export class DetailQuotesService {
   }
 
   getMonthlyProductSummary() {
-    return this.detailQuoteRepository
-      .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock')
-      .innerJoin('stock.producto', 'producto')
-      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-      .select([
+    const subQuery = this.detailQuoteRepository
+    .createQueryBuilder('detalle_cotizacion')
+    .innerJoin('detalle_cotizacion.stock', 'stock')
+    .innerJoin('stock.producto', 'producto')
+    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+    .select([
         'producto.nombre_producto AS nombre_producto',
-        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
-        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
         'MONTH(quote.created_at) AS nm',
-        'YEAR(quote.created_at) AS ny',
-      ])
-      .groupBy('producto.id_producto')
-      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-      .addGroupBy('MONTH(quote.created_at)')
-      .addGroupBy('YEAR(quote.created_at)')
-      .orderBy('YEAR(quote.created_at)', 'ASC')
-      .addOrderBy('MONTH(quote.created_at)', 'ASC')
-      .getRawMany();
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
+    ])
+    .groupBy('producto.id_producto, mes, nm')
+    .getQuery(); 
+
+return this.detailQuoteRepository
+    .createQueryBuilder('ranked') 
+    .addFrom(`(${subQuery})`, 'ranked')  
+    .where('ranked.ranking = 1') 
+    .select([
+        'ranked.nombre_producto',
+        'ranked.mes',
+        'ranked.cantidad',
+        'ranked.nm' 
+    ])
+    .distinct(true)  
+    .orderBy('ranked.nm', 'ASC')  
+    .addOrderBy('ranked.mes', 'ASC')  
+    .getRawMany();
   }
 
   getMonthlyProductSummaryByAgency(id_sucursal: number) {
-    return this.detailQuoteRepository
-      .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock')
-      .innerJoin('stock.sucursal', 'sucursal')
-      .innerJoin('stock.producto', 'producto')
-      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-      .select([
+    const subQuery = this.detailQuoteRepository
+    .createQueryBuilder('detalle_cotizacion')
+    .innerJoin('detalle_cotizacion.stock', 'stock')
+    .innerJoin('stock.producto', 'producto')
+    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+    .innerJoin('cotizacion.sucursal', 'sucursal')
+    .select([
         'producto.nombre_producto AS nombre_producto',
-        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
-        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
         'MONTH(quote.created_at) AS nm',
-        'YEAR(quote.created_at) AS ny',
-      ])
-      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
-      .groupBy('producto.id_producto')
-      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-      .addGroupBy('MONTH(quote.created_at)')
-      .addGroupBy('YEAR(quote.created_at)')
-      .orderBy('cantidad', 'DESC')
-      .addOrderBy('YEAR(quote.created_at)', 'ASC')
-      .addOrderBy('MONTH(quote.created_at)', 'ASC')
-      .getRawMany();
-  }
+        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+        'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
+    ])
+    .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
+    .groupBy('producto.id_producto, mes, nm')
+    .getQuery(); 
 
-  getMonthlyProductByGeneral() {
-    return this.detailQuoteRepository
-      .createQueryBuilder('detalle_cotizacion')
-      .innerJoin('detalle_cotizacion.stock', 'stock')
-      .innerJoin('stock.producto', 'producto')
-      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+return this.detailQuoteRepository
+    .createQueryBuilder('ranked') 
+    .addFrom(`(${subQuery})`, 'ranked')  
+    .where('ranked.ranking = 1') 
+    .select([
+        'ranked.nombre_producto',
+        'ranked.mes',
+        'ranked.cantidad',
+        'ranked.nm' 
+    ])
+    .distinct(true)  
+    .orderBy('ranked.nm', 'ASC')  
+    .addOrderBy('ranked.mes', 'ASC')  
+    .getRawMany();
+
+}
+
+    getMonthlyProductByGeneral() {
+      return this.detailQuoteRepository
+      .createQueryBuilder('dc') 
+      .innerJoin('dc.stock', 's') 
+      .innerJoin('s.sucursal', 'sr') 
+      .innerJoin('s.producto', 'p') 
+      .innerJoin('dc.cotizacion', 'q') 
       .select([
-        'producto.nombre_producto AS nombre_producto',
-        "DATE_FORMAT(quote.created_at, '%M %Y') AS mes",
-        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
-        'MONTH(quote.created_at) AS nm',
-        'YEAR(quote.created_at) AS ny',
+        'p.nombre_producto as nombre_producto',
+        "DATE_FORMAT(q.created_at, '%M %Y') AS mes",
+        'SUM(dc.cantidad_solicitada) AS cantidad',
+        'MONTH(q.created_at) AS NM',
+        'YEAR(q.created_at) AS NY',
       ])
-      .groupBy('producto.id_producto')
-      .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
-      .addGroupBy('MONTH(quote.created_at)')
-      .addGroupBy('YEAR(quote.created_at)')
-      .orderBy('cantidad', 'DESC')
-      .addOrderBy('producto.nombre_producto', 'ASC')
-      .addOrderBy('MONTH(quote.created_at)', 'ASC')
-      .addOrderBy('YEAR(quote.created_at)', 'ASC')
-      .getRawMany();
-  }
+      .groupBy('p.id_producto, mes, sr.id_sucursal, NM, NY') 
+      .orderBy('sr.nombre_sucursal', 'ASC') 
+      .addOrderBy('p.nombre_producto', 'ASC') 
+      .getRawMany(); 
+
+    }
+     
 }

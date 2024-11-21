@@ -4,6 +4,7 @@ import { QuotesService } from './quotes.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { Quote } from './entities/quote.entity';
+import { SrvRecord } from 'dns';
 
 @ApiTags('Quotes')
 @Controller('quotes')
@@ -163,8 +164,23 @@ export class QuotesController {
     summary: 'Obtenie las ventas segun el rango de fechas',
     description: 'Este endpoint sirve para listar todas las ventas en base al rango ingresado',
   })
-  getSaleByDate() {  
-    return this.quotesService.getSaleByDate();
+  @ApiParam({
+    name: 'startDate',
+    type: 'date',
+    description: 'Fecha de inicio en formato YYYY-MM-DD',
+    example: '2023-10-01',
+  })
+  @ApiParam({
+    name: 'endDate',
+    type: 'date',
+    description: 'Fecha final en formato YYYY-MM-DD',
+    example: '2024-11-11',
+  })
+  getSaleByDate(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+  ) {  
+    return this.quotesService.getSaleByDate(startDate, endDate);
   } 
 
   @Get('historical-sales-general')
