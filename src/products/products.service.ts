@@ -35,21 +35,46 @@ export class ProductsService {
     });
   }
 
+  async getProductsPaginated(page: number, limit: number) {
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('producto')
+      .leftJoinAndSelect('producto.categoria', 'categoria')
+      .where('producto.estado = 1')
+      .select([
+        'producto.id_producto',
+        'producto.nombre_producto',
+        'producto.descripcion_producto',
+        'producto.precio_venta',
+        `producto.imagen`,
+        'categoria.nombre_categoria',
+      ])
+
+    const total = await queryBuilder.getCount();
+    const products = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: products,
+      total,
+      currentPage: page,
+      totalPages,
+    };
+  }
+
   createProduct(product: CreateProductDto) {
     const newProduct = this.productRepository.create(product);
     this.productRepository.save(newProduct);
   }
 
   updateProduct(id_producto: number, product: UpdateProductDto) {
-    return this.productRepository.update(
-      { id_producto: id_producto },
-      product,
-    );
+    return this.productRepository.update({ id_producto: id_producto }, product);
   }
 
   deleteProduct(id_producto: number) {
     return this.productRepository.update({ id_producto }, { estado: 0 });
   }
-
-  
 }

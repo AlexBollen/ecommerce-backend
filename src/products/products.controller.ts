@@ -9,6 +9,8 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  DefaultValuePipe,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
@@ -18,6 +20,7 @@ import {
   ApiTags,
   ApiBody,
   ApiConsumes,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
 import { UpdateProductDto } from 'src/products/dto/update-product.dto';
@@ -55,6 +58,36 @@ export class ProductsController {
     @Param('id_producto', ParseIntPipe) id_producto: number,
   ): Promise<Product> {
     return this.productsService.getProduct(id_producto);
+  }
+
+  @Get('productos_paginados')
+  @ApiOperation({
+    summary: 'Obtener todos los usuarios activos con paginación',
+    description:
+      'Este endpoint lista los usuarios activos con soporte para paginación',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  async getProductsPaginated(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<{
+    data: any[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    return this.productsService.getProductsPaginated(page, limit)
   }
 
   @Post()
