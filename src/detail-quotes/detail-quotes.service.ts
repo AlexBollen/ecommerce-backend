@@ -65,7 +65,9 @@ export class DetailQuotesService {
         'producto.id_producto AS id_producto',
         'producto.nombre_producto AS nombre_producto',
         'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
+      .where("cotizacion.tipo_transaccion = 'V'")
       .groupBy('producto.id_producto, producto.nombre_producto')
       .orderBy('total_vendido', 'DESC')
       .limit(10)
@@ -85,7 +87,7 @@ export class DetailQuotesService {
         'sucursal.nombre_sucursal AS nombre_sucursal',
         'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
       ])
-      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
+      .where("sucursal.id_sucursal = :id_sucursal", { id_sucursal })
       .groupBy(
         'producto.id_producto, producto.nombre_producto, sucursal.nombre_sucursal',
       )
@@ -138,6 +140,7 @@ export class DetailQuotesService {
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'MONTH(quote.created_at) AS nm',
         'YEAR(quote.created_at) AS ny',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .groupBy('producto.id_producto')
       .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
@@ -161,6 +164,7 @@ export class DetailQuotesService {
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'MONTH(quote.created_at) AS nm',
         'YEAR(quote.created_at) AS ny',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
       .groupBy('producto.id_producto')
@@ -185,6 +189,7 @@ export class DetailQuotesService {
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'MONTH(quote.created_at) AS nm',
         'YEAR(quote.created_at) AS ny',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .groupBy('producto.id_producto')
       .addGroupBy("DATE_FORMAT(quote.created_at, '%M %Y')")
