@@ -107,6 +107,7 @@ export class StocksService {
         'stock.cantidad_actual AS cantidad_actual',
         'stock.id_stock AS id_stock',
         'sucursal.nombre_sucursal AS nombre_sucursal',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .where('stock.cantidad_actual < :limit', { limit: 10 })
       .orderBy('stock.cantidad_actual', 'DESC')
