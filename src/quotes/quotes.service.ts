@@ -161,7 +161,7 @@ export class QuotesService {
       .getRawMany();
   }
 
-  getSaleByDate() {
+  getSaleByDate(startDate: string, endDate: string) {
     return this.quoteRepository
       .createQueryBuilder('cotizacion')
       .innerJoin('cotizacion.cliente', 'cliente')
@@ -171,13 +171,10 @@ export class QuotesService {
         'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
-      .where(
-        'cotizacion.created_at >= :startDate AND cotizacion.created_at <= :endDate',
-        {
-          startDate: '2024-01-01',
-          endDate: '2024-11-18',
-        },
-      )
+      .where('cotizacion.created_at >= :startDate AND cotizacion.created_at <= :endDate', { 
+        startDate: startDate, 
+        endDate: endDate 
+      })
       .groupBy('cliente.nombre_cliente')
       .addGroupBy('sucursal.nombre_sucursal')
       .orderBy('cantidad_compras', 'DESC')
