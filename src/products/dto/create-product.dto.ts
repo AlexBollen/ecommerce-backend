@@ -1,5 +1,7 @@
 import { IsString, MinLength, IsInt, Min, IsOptional, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Category } from 'src/categories/category.entity';
+import { Brand } from 'src/brands/brand.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -33,4 +35,12 @@ export class CreateProductDto {
   @IsString()
   @MinLength(1)
   imagen?: string;
+
+  @IsInt()
+  @Type(() => Number)
+  categoria: Category
+
+  @IsInt()
+  @Type(() => Number)
+  marca: Brand
 }

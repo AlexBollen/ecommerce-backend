@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
 
 @Entity({ name: 'usuario' })
 export class User {
@@ -43,5 +44,11 @@ export class User {
   role: Role;
 
   @OneToMany(() => Quote, (quote) => quote.usuario)
-  cotizaciones: Quote[]
+  cotizaciones: Quote[];
+
+  @OneToMany(
+    () => ProductTransfer,
+    (producttranser) => producttranser.id_usuario,
+  )
+  TransferenciaProducto: ProductTransfer[];
 }

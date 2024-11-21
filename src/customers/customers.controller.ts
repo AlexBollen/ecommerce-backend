@@ -54,6 +54,23 @@ export class CustomersController {
     return this.customerService.getCustomer(id_cliente);
   }
 
+  @Get('correo/:correo_cliente')
+  @ApiOperation({
+    summary: 'Obtener cliente',
+    description: 'Este endpoint sirve para obtener un cliente por su correo',
+  })
+  @ApiParam({
+    name: 'correo_cliente',
+    type: 'string',
+    description: 'Correo del cliente a obtener',
+    example: 'marredxxx@mail.com',
+  })
+  getCustomerByEmail(
+    @Param('correo_cliente') correo_cliente: string,
+  ): Promise<Customer> {
+    return this.customerService.getCustomerByEmail(correo_cliente);
+  }
+
   @Post('customerLogin')
   @ApiOperation({
     summary: 'Iniciar sesión con cliente',

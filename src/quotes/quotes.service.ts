@@ -6,6 +6,8 @@ import { Quote } from './entities/quote.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DetailQuote } from 'src/detail-quotes/entities/detail-quote.entity';
 import { Stock } from 'src/stocks/entities/stock.entity';
+import { StocksService } from 'src/stocks/stocks.service';
+import { AgenciesService } from 'src/agencies/agencies.service';
 
 @Injectable()
 export class QuotesService {
@@ -14,6 +16,8 @@ export class QuotesService {
     @InjectRepository(DetailQuote)
     private detailQuoteRepository: Repository<DetailQuote>,
     @InjectRepository(Stock) private stockRepository: Repository<Stock>,
+    private stockService: StocksService,
+    private agencyService: AgenciesService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -26,6 +30,7 @@ export class QuotesService {
       .select([
         'cotizacion.id_cotizacion AS id_cotizacion',
         'cotizacion.monto_total AS monto_total',
+        'cotizacion.tipo_transaccion AS tipo_transaccion',
         'cliente.nombre_cliente AS nombre_cliente',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
@@ -50,33 +55,53 @@ export class QuotesService {
     try {
       const newQuote = this.quoteRepository.create(quote);
       const savedQuote = await queryRunner.manager.save(newQuote);
+      const agency = await this.agencyService.getAgency(quote.sucursalId);
 
       for (const product of quote.lista_productos) {
         const cantidadSolicitada = parseInt(product[1]);
+        let cantidadTmp = cantidadSolicitada;
         if (isNaN(cantidadSolicitada) || cantidadSolicitada <= 0) {
           throw new Error('Cantidad solicitada no válida');
         }
 
-        const stock = await this.stockRepository.findOne({
-          where: { id_stock: product[0] },
-        });
-
-        if (!stock) {
-          throw new Error('El stock no existe en el inventario');
-        }
-
-        if (cantidadSolicitada > stock.cantidad_actual) {
-          throw new Error('No hay existencias suficientes');
-        }
-
-        if (quote.tipo_transaccion) {
-          await this.stockRepository.decrement(
-            { id_stock: product[0] },
-            'cantidad_actual',
-            cantidadSolicitada,
+        if (quote.tipo) {
+          const relatedStocks = await this.stockService.getRelatedStocks(
+            product[0],
+            agency.id_sucursal,
           );
-        }
 
+          if (relatedStocks.length === 0) {
+            throw new Error('No hay existencias en los stocks de producto');
+          }
+
+          let cantidadExistentes = 0;
+          for (const stock of relatedStocks) {
+            cantidadExistentes += stock.cantidad_actual;
+          }
+
+          if (cantidadExistentes < cantidadSolicitada) {
+            throw new Error('No hay existencias suficientes');
+          }
+
+          for (const relatedStock of relatedStocks) {
+            if (cantidadTmp > 0) {
+              if (cantidadTmp > relatedStock.cantidad_actual) {
+                cantidadTmp -= relatedStock.cantidad_actual;
+                await this.stockRepository.update(
+                  { id_stock: relatedStock.id_stock },
+                  { cantidad_actual: 0 },
+                );
+              } else if (cantidadTmp <= relatedStock.cantidad_actual) {
+                await this.stockRepository.decrement(
+                  { id_stock: relatedStock.id_stock },
+                  'cantidad_actual',
+                  cantidadTmp,
+                );
+                cantidadTmp = 0;
+              }
+            }
+          }
+        }
         const newDetail = this.detailQuoteRepository.create({
           cantidad_solicitada: cantidadSolicitada,
           stock: product[0],
@@ -104,16 +129,16 @@ export class QuotesService {
   getBestCustomersGeneral() {
     return this.quoteRepository
       .createQueryBuilder('cotizacion')
-      .innerJoin('cotizacion.cliente', 'cliente') 
-      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .innerJoin('cotizacion.cliente', 'cliente')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
       .select([
         'cliente.nombre_cliente AS nombre_cliente',
         'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
-      .groupBy('cliente.nombre_cliente') 
-      .addGroupBy('sucursal.nombre_sucursal') 
-      .orderBy('cantidad_compras', 'DESC') 
+      .groupBy('cliente.nombre_cliente')
+      .addGroupBy('sucursal.nombre_sucursal')
+      .orderBy('cantidad_compras', 'DESC')
       .limit(10)
       .getRawMany();
   }
@@ -121,21 +146,20 @@ export class QuotesService {
   getBestCustomersAgency(id_sucursal: number) {
     return this.quoteRepository
       .createQueryBuilder('cotizacion')
-      .innerJoin('cotizacion.cliente', 'cliente') 
-      .innerJoin('cotizacion.sucursal', 'sucursal') 
+      .innerJoin('cotizacion.cliente', 'cliente')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
       .select([
         'cliente.nombre_cliente AS nombre_cliente',
         'COUNT(cotizacion.id_cotizacion) AS cantidad_compras',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
       .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
-      .groupBy('cliente.nombre_cliente') 
-      .addGroupBy('sucursal.nombre_sucursal') 
-      .orderBy('cantidad_compras', 'DESC') 
+      .groupBy('cliente.nombre_cliente')
+      .addGroupBy('sucursal.nombre_sucursal')
+      .orderBy('cantidad_compras', 'DESC')
       .limit(10)
       .getRawMany();
   }
-  
 
   getSaleByDate(startDate: string, endDate: string) {
     return this.quoteRepository
@@ -156,48 +180,45 @@ export class QuotesService {
       .orderBy('cantidad_compras', 'DESC')
       .getRawMany();
   }
-  
-  getHistoricalSales() { 
+
+  getHistoricalSales() {
     return this.quoteRepository
-      .createQueryBuilder('cotizacion') 
-      .innerJoin('cotizacion.cliente', 'cliente') 
-      .innerJoin('cotizacion.sucursal', 'sucursal') 
-      .innerJoin('cotizacion.usuario', 'usuario') 
+      .createQueryBuilder('cotizacion')
+      .innerJoin('cotizacion.cliente', 'cliente')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
+      .innerJoin('cotizacion.usuario', 'usuario')
       .select([
         'usuario.nombre_persona AS nombre_persona',
-        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha", 
-        'TIME(cotizacion.created_at) AS hora', 
+        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha",
+        'TIME(cotizacion.created_at) AS hora',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
       .groupBy('usuario.nombre_persona')
-      .addGroupBy('fecha') 
-      .addGroupBy('hora') 
+      .addGroupBy('fecha')
+      .addGroupBy('hora')
       .addGroupBy('sucursal.nombre_sucursal')
-      .orderBy('fecha', 'DESC') 
-      .getRawMany(); 
+      .orderBy('fecha', 'DESC')
+      .getRawMany();
   }
 
-  getHistoricalSalesByAgency(id_sucursal: number) { 
+  getHistoricalSalesByAgency(id_sucursal: number) {
     return this.quoteRepository
-      .createQueryBuilder('cotizacion') 
-      .innerJoin('cotizacion.cliente', 'cliente') 
-      .innerJoin('cotizacion.sucursal', 'sucursal') 
-      .innerJoin('cotizacion.usuario', 'usuario') 
+      .createQueryBuilder('cotizacion')
+      .innerJoin('cotizacion.cliente', 'cliente')
+      .innerJoin('cotizacion.sucursal', 'sucursal')
+      .innerJoin('cotizacion.usuario', 'usuario')
       .select([
         'usuario.nombre_persona AS nombre_persona',
-        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha", 
-        'TIME(cotizacion.created_at) AS hora', 
+        "DATE_FORMAT(cotizacion.created_at, '%Y-%m-%d') AS fecha",
+        'TIME(cotizacion.created_at) AS hora',
         'sucursal.nombre_sucursal AS nombre_sucursal',
       ])
       .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
       .groupBy('usuario.nombre_persona')
-      .addGroupBy('fecha') 
-      .addGroupBy('hora') 
+      .addGroupBy('fecha')
+      .addGroupBy('hora')
       .addGroupBy('sucursal.nombre_sucursal')
-      .orderBy('fecha', 'DESC') 
-      .getRawMany(); 
+      .orderBy('fecha', 'DESC')
+      .getRawMany();
   }
-  
-  
-  
 }

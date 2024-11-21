@@ -21,6 +21,8 @@ import { DetailQuotesModule } from './detail-quotes/detail-quotes.module';
 import { SalesModule } from './sales/sales.module';
 import * as Joi from 'joi';
 import { join } from 'path';
+import { ProductTransferModule } from './product-transfer/product-transfer.module';
+import { TransferDetailModule } from './transfer-detail/transfer-detail.module';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { join } from 'path';
     QuotesModule,
     DetailQuotesModule,
     SalesModule,
+    ProductTransferModule,
+    TransferDetailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

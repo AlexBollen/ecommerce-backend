@@ -40,6 +40,7 @@ export class StocksService {
       .select([
         'sucursal.nombre_sucursal AS sucursal',
         'SUM(stock.cantidad_actual) AS existencias',
+        'GROUP_CONCAT(stock.id_stock) AS id_stock',
       ])
       .where(
         'stock.productoIdProducto = :id_product AND stock.estado = 1 AND stock.cantidad_actual > 0',
@@ -58,6 +59,28 @@ export class StocksService {
         { id_product },
       )
       .getRawOne();
+  }
+
+  async getRelatedStocks(id_producto: number, id_sucursal: number) {
+    return await this.stockRepository
+      .createQueryBuilder('stock')
+      .where('stock.producto = :producto', { producto: id_producto })
+      .andWhere('stock.sucursal = :sucursal', { sucursal: id_sucursal })
+      .getMany();
+  }
+
+  async getSumRelatedStocks(
+    id_producto: number,
+    id_sucursal: number,
+  ): Promise<number> {
+    const result = await this.stockRepository
+      .createQueryBuilder('stock')
+      .select('SUM(stock.cantidad_actual)', 'sum')
+      .where('stock.producto = :producto', { producto: id_producto })
+      .andWhere('stock.sucursal = :sucursal', { sucursal: id_sucursal })
+      .getRawOne();
+
+    return result.sum ? Number(result.sum) : 0;
   }
 
   createStock(stock: CreateStockDto) {
@@ -84,12 +107,11 @@ export class StocksService {
         'stock.cantidad_actual AS cantidad_actual',
         'stock.id_stock AS id_stock',
         'sucursal.nombre_sucursal AS nombre_sucursal',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .where('stock.cantidad_actual < :limit', { limit: 10 })
       .orderBy('stock.cantidad_actual', 'DESC')
       .limit(20)
       .getRawMany();
   }
-
-  
 }

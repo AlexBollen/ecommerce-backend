@@ -51,11 +51,11 @@ export class AgenciesService {
         userCoordinates.lat,
         userCoordinates.lon,
         agency.latitud,
-        agency.longitud
-      )
+        agency.longitud,
+      );
       if (distance < minDistance) {
-        minDistance = distance
-        closest = agency
+        minDistance = distance;
+        closest = agency;
       }
     }
     return closest;

@@ -65,7 +65,9 @@ export class DetailQuotesService {
         'producto.id_producto AS id_producto',
         'producto.nombre_producto AS nombre_producto',
         'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
+      .where("cotizacion.tipo_transaccion = 'V'")
       .groupBy('producto.id_producto, producto.nombre_producto')
       .orderBy('total_vendido', 'DESC')
       .limit(10)
@@ -85,7 +87,7 @@ export class DetailQuotesService {
         'sucursal.nombre_sucursal AS nombre_sucursal',
         'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
       ])
-      .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
+      .where("sucursal.id_sucursal = :id_sucursal", { id_sucursal })
       .groupBy(
         'producto.id_producto, producto.nombre_producto, sucursal.nombre_sucursal',
       )
@@ -136,6 +138,7 @@ export class DetailQuotesService {
         'producto.nombre_producto AS nombre_producto',
         'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
         'MONTH(quote.created_at) AS nm',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
     ])
@@ -169,12 +172,16 @@ return this.detailQuoteRepository
         'producto.nombre_producto AS nombre_producto',
         'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
         'MONTH(quote.created_at) AS nm',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
     ])
     .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
     .groupBy('producto.id_producto, mes, nm')
     .getQuery(); 
+
+  }
+
 
 return this.detailQuoteRepository
     .createQueryBuilder('ranked') 
@@ -206,6 +213,7 @@ return this.detailQuoteRepository
         'SUM(dc.cantidad_solicitada) AS cantidad',
         'MONTH(q.created_at) AS NM',
         'YEAR(q.created_at) AS NY',
+        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
       ])
       .groupBy('p.id_producto, mes, sr.id_sucursal, NM, NY') 
       .orderBy('sr.nombre_sucursal', 'ASC') 

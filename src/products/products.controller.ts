@@ -107,6 +107,14 @@ export class ProductsController {
           type: 'string',
           format: 'binary',
         },
+        categoria: {
+          type: 'number',
+          example: '1'
+        },
+        marca: {
+          type: 'number',
+          example: '1'
+        }
       },
     },
   })
