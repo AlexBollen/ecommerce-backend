@@ -11,6 +11,7 @@ import { Location } from 'src/locations/location.entity';
 import { Stock } from 'src/stocks/entities/stock.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
 import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
+import { AgencyEmployeeRelation } from 'src/agency-employee-relation/entities/agency-employee-relation.entity';
 
 @Entity({ name: 'sucursal' })
 export class Agency {
@@ -62,4 +63,7 @@ export class Agency {
     (producttransfer) => producttransfer.sucursal_Entrante,
   )
   TransferenciaProducto: [];
+
+  @OneToMany(() => AgencyEmployeeRelation, (relacion) => relacion.id_sucursal)
+  UserRelation: AgencyEmployeeRelation[];
 }

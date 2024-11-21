@@ -48,6 +48,14 @@ export class UsersController {
           type: 'string',
           example: 'mySecret_password',
         },
+        id_sucursal: {
+          type: 'number',
+          example: 1,
+        },
+        role: {
+          type: 'number',
+          example: 1,
+        },
       },
     },
   })

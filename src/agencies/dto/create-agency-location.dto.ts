@@ -1,6 +1,6 @@
-import { Transform } from "class-transformer";
-import { IsOptional, IsString, MinLength } from "class-validator";
-import { Location } from "src/locations/location.entity";
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, MinLength } from 'class-validator';
+import { Location } from 'src/locations/location.entity';
 
 export class CreateAgencyLocationDto {
   @Transform(({ value }) => value.trim())
@@ -22,5 +22,5 @@ export class CreateAgencyLocationDto {
   correo?: string;
   @IsOptional()
   @MinLength(1)
-  ubicacion?: Location
+  ubicacion?: Location;
 }

@@ -35,6 +35,10 @@ export class AuthController {
           type: 'number',
           example: '1',
         },
+        id_sucursal: {
+          type: 'number',
+          example: 1,
+        },
       },
     },
   })

@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductTransfer } from 'src/product-transfer/entities/product-transfer.entity';
+import { AgencyEmployeeRelation } from 'src/agency-employee-relation/entities/agency-employee-relation.entity';
 
 @Entity({ name: 'usuario' })
 export class User {
@@ -51,4 +52,7 @@ export class User {
     (producttranser) => producttranser.id_usuario,
   )
   TransferenciaProducto: ProductTransfer[];
+
+  @OneToMany(() => AgencyEmployeeRelation, (relacion) => relacion.id_usuario)
+  AgencyRelation: AgencyEmployeeRelation[];
 }

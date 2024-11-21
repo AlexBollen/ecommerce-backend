@@ -42,7 +42,7 @@ export class Product {
 
   @Column({ nullable: true })
   @ApiProperty()
-  imagen: string
+  imagen: string;
 
   @Column({ type: 'tinyint', default: 1 })
   @ApiProperty()
