@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductTransferDto } from './dto/create-product-transfer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductTransfer } from './entities/product-transfer.entity';
@@ -7,6 +7,7 @@ import { Stock } from 'src/stocks/entities/stock.entity';
 import { TransferDetail } from 'src/transfer-detail/entities/transfer-detail.entity';
 import { Agency } from 'src/agencies/agency.entity';
 import { StocksService } from 'src/stocks/stocks.service';
+import { CreateStockDto } from 'src/stocks/dto/create-stock.dto';
 
 @Injectable()
 export class ProductTransferService {
@@ -22,16 +23,16 @@ export class ProductTransferService {
     private stockService: StocksService,
   ) {}
 
-  getAllTransferences() {
-    return this.productTransferRepository.find({
-      where: { estado: 1 },
-      relations: [
-        'DetalleTransferencia',
-        'id_estado_transferencia',
-        'sucursal_Entrante',
-        'id_usuario',
-      ],
-    });
+  async getAllTransferences() {
+    return this.productTransferRepository
+      .createQueryBuilder('transferencia')
+      .leftJoinAndSelect('transferencia.DetalleTransferencia', 'detalle')
+      .leftJoinAndSelect('transferencia.id_estado_transferencia', 'estado')
+      .leftJoinAndSelect('transferencia.sucursal_Entrante', 'sucursal')
+      .leftJoinAndSelect('transferencia.id_usuario', 'usuario')
+      .where('transferencia.estado = :estado', { estado: 1 })
+      .andWhere('estado.id_estado_transferencia = :estadoId', { estadoId: 2 })
+      .getMany();
   }
 
   async createTransference(transferencia: CreateProductTransferDto) {
@@ -123,6 +124,38 @@ export class ProductTransferService {
         'id_usuario',
       ],
     });
+  }
+
+  async updateStateAndCreateStock(id_transferencia: number): Promise<void> {
+    const transfer = await this.productTransferRepository.findOne({
+      where: { id_transferencia },
+      relations: [
+        'DetalleTransferencia',
+        'DetalleTransferencia.id_stock',
+        'DetalleTransferencia.id_stock.producto',
+        'sucursal_Entrante',
+      ],
+    });
+
+    if (!transfer) {
+      throw new NotFoundException(
+        `Transferencia con id ${id_transferencia} no encontrada.`,
+      );
+    }
+
+    transfer.id_estado_transferencia = { id_estado_transferencia: 1 } as any; // Asegurarse que es compatible
+    await this.productTransferRepository.save(transfer);
+
+    for (const detail of transfer.DetalleTransferencia) {
+      const newStock: CreateStockDto = {
+        cantidad_inicial: detail.cantidad_transferencia,
+        cantidad_actual: detail.cantidad_transferencia,
+        producto: detail.id_stock.producto,
+        sucursal: transfer.sucursal_Entrante,
+      };
+
+      await this.stockService.createStock(newStock);
+    }
   }
 
   deleteTransfer(id_transferencia: number) {

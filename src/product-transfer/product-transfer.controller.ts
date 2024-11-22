@@ -22,18 +22,13 @@ export class ProductTransferController {
     private readonly productTransferService: ProductTransferService,
   ) {}
 
-  /*@Post()
-  create(@Body() createProductTransferDto: CreateProductTransferDto) {
-    return this.productTransferService.create(createProductTransferDto);
-  }*/
-
-  @Get()
+  @Get('/all')
   @ApiOperation({
     summary: 'Obtener transferencias de productos',
     description:
       'Este endpoint sirve para listar todas las transferencias de productos',
   })
-  getAllTransferences(): Promise<ProductTransfer[]> {
+  getTransfersBySucursal() {
     return this.productTransferService.getAllTransferences();
   }
 
@@ -92,6 +87,11 @@ export class ProductTransferController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Patch(':id/actualizar-estado-y-crear-stocks')
+  async actualizarEstadoYCrearStocks(@Param('id') id: number): Promise<void> {
+    await this.productTransferService.updateStateAndCreateStock(id);
   }
 
   @Delete(':id')
