@@ -10,7 +10,7 @@ import { AgencyEmployeeRelationModule } from 'src/agency-employee-relation/agenc
   imports: [
     UsersModule,
     RolesModule,
-    AgencyEmployeeRelationModule,
+    AgencyEmployeeRelationModule, 
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: `${process.env.JWT_SECRET}`,
