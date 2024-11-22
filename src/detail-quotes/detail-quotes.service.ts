@@ -186,10 +186,6 @@ export class DetailQuotesService {
       .getRawMany();
   }
   
-  
-
-
-
     getMonthlyProductByGeneral() {
       const subQuery = this.detailQuoteRepository
       .createQueryBuilder('detalle_cotizacion')
@@ -200,7 +196,7 @@ export class DetailQuotesService {
           'producto.nombre_producto AS nombre_producto',
           `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
           'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
-          'MAX(quote.created_at) AS fecha_ultima_cotizacion', 
+          'MAX(quote.created_at) AS mes', 
           'ROW_NUMBER() OVER (ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
       ])
       .groupBy('producto.id_producto')  
@@ -214,7 +210,7 @@ export class DetailQuotesService {
           'ranked.nombre_producto',
           'ranked.cantidad',
           'ranked.imagen',
-          'ranked.fecha_ultima_cotizacion' 
+          'ranked.mes' 
       ])
       .distinct(true)  
       .getRawMany();
