@@ -145,81 +145,79 @@ export class DetailQuotesService {
     .groupBy('producto.id_producto, mes, nm')
     .getQuery(); 
 
-return this.detailQuoteRepository
-    .createQueryBuilder('ranked') 
-    .addFrom(`(${subQuery})`, 'ranked')  
-    .where('ranked.ranking = 1') 
-    .select([
-        'ranked.nombre_producto',
-        'ranked.mes',
-        'ranked.cantidad',
-        'ranked.nm' 
-    ])
-    .distinct(true)  
-    .orderBy('ranked.nm', 'ASC')  
-    .addOrderBy('ranked.mes', 'ASC')  
-    .getRawMany();
+    return this.detailQuoteRepository
+        .createQueryBuilder('ranked') 
+        .addFrom(`(${subQuery})`, 'ranked')  
+        .where('ranked.ranking = 1') 
+        .select([
+            'ranked.nombre_producto',
+            'ranked.mes',
+            'ranked.cantidad',
+            'ranked.nm' 
+      ])
+      .distinct(true)  
+      .orderBy('ranked.nm', 'ASC')  
+      .addOrderBy('ranked.mes', 'ASC')  
+      .getRawMany();
   }
 
   getMonthlyProductSummaryByAgency(id_sucursal: number) {
-    const subQuery = this.detailQuoteRepository
-    .createQueryBuilder('detalle_cotizacion')
-    .innerJoin('detalle_cotizacion.stock', 'stock')
-    .innerJoin('stock.producto', 'producto')
-    .innerJoin('detalle_cotizacion.cotizacion', 'quote')
-    .innerJoin('cotizacion.sucursal', 'sucursal')
-    .select([
-        'producto.nombre_producto AS nombre_producto',
-        'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
-        'MONTH(quote.created_at) AS nm',
-        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
-        'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
-        'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
-    ])
-    .where('sucursal.id_sucursal = :id_sucursal', { id_sucursal })
-    .groupBy('producto.id_producto, mes, nm')
-    .getQuery(); 
-
-  }
-
-
-return this.detailQuoteRepository
-    .createQueryBuilder('ranked') 
-    .addFrom(`(${subQuery})`, 'ranked')  
-    .where('ranked.ranking = 1') 
-    .select([
-        'ranked.nombre_producto',
-        'ranked.mes',
-        'ranked.cantidad',
-        'ranked.nm' 
-    ])
-    .distinct(true)  
-    .orderBy('ranked.nm', 'ASC')  
-    .addOrderBy('ranked.mes', 'ASC')  
-    .getRawMany();
-
-}
-
-    getMonthlyProductByGeneral() {
-      return this.detailQuoteRepository
-      .createQueryBuilder('dc') 
-      .innerJoin('dc.stock', 's') 
-      .innerJoin('s.sucursal', 'sr') 
-      .innerJoin('s.producto', 'p') 
-      .innerJoin('dc.cotizacion', 'q') 
+    return this.detailQuoteRepository
+      .createQueryBuilder('dc')
+      .innerJoin('dc.stock', 's')
+      .innerJoin('s.producto', 'p')
+      .innerJoin('dc.cotizacion', 'q')
+      .innerJoin('q.sucursal', 'sr')
       .select([
-        'p.nombre_producto as nombre_producto',
+        'p.nombre_producto AS nombre_producto',
         "DATE_FORMAT(q.created_at, '%M %Y') AS mes",
         'SUM(dc.cantidad_solicitada) AS cantidad',
         'MONTH(q.created_at) AS NM',
-        'YEAR(q.created_at) AS NY',
-        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
+        'YEAR(q.created_at) AS NY'
       ])
-      .groupBy('p.id_producto, mes, sr.id_sucursal, NM, NY') 
-      .orderBy('sr.nombre_sucursal', 'ASC') 
-      .addOrderBy('p.nombre_producto', 'ASC') 
-      .getRawMany(); 
+      .where('sr.id_sucursal = :id_sucursal', { id_sucursal })
+      .groupBy('p.id_producto')
+      .addGroupBy("DATE_FORMAT(q.created_at, '%M %Y')")
+      .addGroupBy('sr.id_sucursal')
+      .addGroupBy('MONTH(q.created_at)')
+      .addGroupBy('YEAR(q.created_at)')
+      .orderBy('sr.nombre_sucursal', 'ASC')
+      .addOrderBy('p.nombre_producto', 'ASC')
+      .getRawMany();
+  }
+  
+  
 
+
+
+    getMonthlyProductByGeneral() {
+      const subQuery = this.detailQuoteRepository
+      .createQueryBuilder('detalle_cotizacion')
+      .innerJoin('detalle_cotizacion.stock', 'stock')
+      .innerJoin('stock.producto', 'producto')
+      .innerJoin('detalle_cotizacion.cotizacion', 'quote')
+      .select([
+          'producto.nombre_producto AS nombre_producto',
+          `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
+          'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
+          'MAX(quote.created_at) AS fecha_ultima_cotizacion', 
+          'ROW_NUMBER() OVER (ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
+      ])
+      .groupBy('producto.id_producto')  
+      .getQuery();
+
+  return this.detailQuoteRepository
+      .createQueryBuilder('ranked')
+      .addFrom(`(${subQuery})`, 'ranked')
+      .where('ranked.ranking <= 5') 
+      .select([
+          'ranked.nombre_producto',
+          'ranked.cantidad',
+          'ranked.imagen',
+          'ranked.fecha_ultima_cotizacion' 
+      ])
+      .distinct(true)  
+      .getRawMany();
     }
-     
+    
 }

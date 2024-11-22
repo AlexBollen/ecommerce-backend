@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseIntPipe, Query, BadRequestException} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags, ApiBody } from '@nestjs/swagger';
 import { QuotesService } from './quotes.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { Quote } from './entities/quote.entity';
 import { SrvRecord } from 'dns';
+import { ApiQuery } from '@nestjs/swagger';
+
 
 @ApiTags('Quotes')
 @Controller('quotes')
@@ -165,27 +167,30 @@ export class QuotesController {
 
   @Get('sale-by-date')
   @ApiOperation({
-    summary: 'Obtenie las ventas segun el rango de fechas',
+    summary: 'Obtener las ventas según el rango de fechas',
     description: 'Este endpoint sirve para listar todas las ventas en base al rango ingresado',
   })
-  @ApiParam({
+  @ApiQuery({
     name: 'startDate',
-    type: 'date',
+    type: 'string',
     description: 'Fecha de inicio en formato YYYY-MM-DD',
     example: '2023-10-01',
   })
-  @ApiParam({
+  @ApiQuery({
     name: 'endDate',
-    type: 'date',
+    type: 'string',
     description: 'Fecha final en formato YYYY-MM-DD',
     example: '2024-11-11',
   })
-  getSaleByDate(
-    @Param('startDate') startDate: string,
-    @Param('endDate') endDate: string,
-  ) {  
-    return this.quotesService.getSaleByDate(startDate, endDate);
-  } 
+  async getSaleByDate(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    const startDateTime = `${startDate} 00:00:00`;  
+    const endDateTime = `${endDate} 23:59:59`;    
+
+    return this.quotesService.getSaleByDate(startDateTime, endDateTime);
+}
 
   @Get('historical-sales-general')
   @ApiOperation({
