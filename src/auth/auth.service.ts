@@ -35,7 +35,7 @@ export class AuthService {
       nombre_persona,
       username,
       password: await bcryptjs.hash(password, 10),
-      role,
+      role: role
     });
     return {
       nombre_persona,

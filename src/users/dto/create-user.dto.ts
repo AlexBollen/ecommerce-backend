@@ -1,14 +1,10 @@
 import { Transform } from 'class-transformer';
 import {
   IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
   IsString,
   Min,
   MinLength,
 } from 'class-validator';
-import { Agency } from 'src/agencies/agency.entity';
 import { Role } from 'src/roles/role.entity';
 
 export class CreateUserDto {
