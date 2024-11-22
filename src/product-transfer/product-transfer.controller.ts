@@ -22,14 +22,14 @@ export class ProductTransferController {
     private readonly productTransferService: ProductTransferService,
   ) {}
 
-  @Get('/all/:sucursalId')
+  @Get('/all')
   @ApiOperation({
     summary: 'Obtener transferencias de productos',
     description:
       'Este endpoint sirve para listar todas las transferencias de productos',
   })
-  getTransfersBySucursal(@Param('sucursalId') sucursalId: number) {
-    return this.productTransferService.getAllTransferences(sucursalId);
+  getTransfersBySucursal() {
+    return this.productTransferService.getAllTransferences();
   }
 
   @Get(':id')

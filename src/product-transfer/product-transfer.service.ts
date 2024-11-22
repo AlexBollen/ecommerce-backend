@@ -23,7 +23,7 @@ export class ProductTransferService {
     private stockService: StocksService,
   ) {}
 
-  async getAllTransferences(sucursalId: number) {
+  async getAllTransferences() {
     return this.productTransferRepository
       .createQueryBuilder('transferencia')
       .leftJoinAndSelect('transferencia.DetalleTransferencia', 'detalle')
@@ -32,7 +32,6 @@ export class ProductTransferService {
       .leftJoinAndSelect('transferencia.id_usuario', 'usuario')
       .where('transferencia.estado = :estado', { estado: 1 })
       .andWhere('estado.id_estado_transferencia = :estadoId', { estadoId: 2 })
-      .andWhere('sucursal.id_sucursal = :sucursalId', { sucursalId })
       .getMany();
   }
 
