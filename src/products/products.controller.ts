@@ -28,6 +28,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Products')
 @Controller('products')
@@ -158,7 +159,7 @@ export class ProductsController {
     newProduct.cantidad_minima = Number(newProduct.cantidad_minima);
     newProduct.precio_costo = Number(newProduct.precio_costo);
     newProduct.precio_venta = Number(newProduct.precio_venta);
-    newProduct.imagen = file ? file.path : null;
+    newProduct.imagen = file ? `/uploads/products/${file.filename}` : null;
     return this.productsService.createProduct(newProduct);
   }
 
