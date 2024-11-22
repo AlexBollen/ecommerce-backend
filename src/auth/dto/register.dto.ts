@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsString, MinLength } from 'class-validator';
+import { IsInt, IsString, Min, MinLength } from 'class-validator';
+import { Agency } from 'src/agencies/agency.entity';
 
 export class RegisterDto {
   @Transform(({ value }) => value.trim())
@@ -16,4 +17,7 @@ export class RegisterDto {
   password: string;
   @IsInt()
   id_rol: number;
+  @IsInt()
+  @Min(1)
+  id_sucursal: Agency;
 }

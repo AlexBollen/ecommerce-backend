@@ -1,5 +1,14 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsString, MinLength } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
+import { Agency } from 'src/agencies/agency.entity';
 import { Role } from 'src/roles/role.entity';
 
 export class CreateUserDto {
@@ -17,4 +26,7 @@ export class CreateUserDto {
   password: string;
   @IsInt()
   role: Role;
+  @IsInt()
+  @Min(1)
+  id_sucursal?: number;
 }

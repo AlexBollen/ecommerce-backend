@@ -23,6 +23,7 @@ import * as Joi from 'joi';
 import { join } from 'path';
 import { ProductTransferModule } from './product-transfer/product-transfer.module';
 import { TransferDetailModule } from './transfer-detail/transfer-detail.module';
+import { AgencyEmployeeRelationModule } from './agency-employee-relation/agency-employee-relation.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { TransferDetailModule } from './transfer-detail/transfer-detail.module';
     SalesModule,
     ProductTransferModule,
     TransferDetailModule,
+    AgencyEmployeeRelationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
