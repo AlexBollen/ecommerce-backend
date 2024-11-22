@@ -38,6 +38,15 @@ export class AgencyEmployeeRelationService {
     return relation;
   }
 
+  async findByUserId(userId: number): Promise<AgencyEmployeeRelation[]> {
+    return this.relationRepository
+      .createQueryBuilder('relation')
+      .innerJoinAndSelect('relation.id_usuario', 'user')
+      .innerJoinAndSelect('relation.id_sucursal', 'agency')
+      .where('relation.id_usuario = :userId', { userId })
+      .getMany();
+  }
+
   async update(
     id: number,
     updateDto: UpdateAgencyEmployeeRelationDto,

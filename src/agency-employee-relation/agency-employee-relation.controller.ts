@@ -59,6 +59,16 @@ export class AgencyEmployeeRelationController {
     return this.agencyEmployeeRelationService.findOne(id);
   }
 
+  @Get('user/:userId')
+  @ApiOperation({
+    summary: 'Obtener una relación por ID de usuario',
+    description:
+      'Este endpoint sirve para obtener una relación específica por el ID de usuario.',
+  })
+  async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.agencyEmployeeRelationService.findByUserId(userId);
+  }
+
   @Post()
   @ApiOperation({
     summary: 'Crear una nueva relación empleado-sucursal',

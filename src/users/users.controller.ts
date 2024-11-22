@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { number } from 'joi';
 
 @ApiTags('Users')
 @Controller('users')
@@ -76,6 +77,16 @@ export class UsersController {
   })
   findByUsername(@Param('username') username: string): Promise<User | any> {
     return this.usersService.findByUsername(username);
+  }
+
+  @Get('/agencies/:iduser')
+  @ApiOperation({
+    summary: 'Obtener id relacion empleado sucursal de usuario',
+    description:
+      'Este endpoint sirve para obtener una relacion empleado sucursal usuario',
+  })
+  findOne(@Param('iduser') iduser: string) {
+    return this.usersService.findByIdUser(+iduser);
   }
 
   @Get()
