@@ -11,6 +11,7 @@ import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RolesService } from 'src/roles/roles.service';
+import { AgencyEmployeeRelationService } from 'src/agency-employee-relation/agency-employee-relation.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly roleService: RolesService,
+    private readonly relationService: AgencyEmployeeRelationService,
   ) {}
 
   async register({ nombre_persona, username, password, id_rol }: RegisterDto) {
@@ -59,13 +61,15 @@ export class AuthService {
       role: user.id_rol,
     };
     const token = await this.jwtService.signAsync(payload);
-    const agency_employee = 1;
+    const agencyRelation = await this.relationService.findByUserId(
+      user.id_usuario,
+    );
     return {
       token,
       sub: user.id_usuario,
       name: user.nombre_persona,
       role: role.nombre_rol,
-      agency_employee: agency_employee,
+      agency_employee: agencyRelation.id_sucursal.id_sucursal,
     };
   }
 }
