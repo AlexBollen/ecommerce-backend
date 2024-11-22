@@ -28,7 +28,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
-import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
+import { Req } from '@nestjs/common';
 
 @ApiTags('Products')
 @Controller('products')
@@ -40,8 +41,8 @@ export class ProductsController {
     summary: 'Obtener productos',
     description: 'Este endpoint sirve para listar todos los productos',
   })
-  getAllProducts(): Promise<Product[]> {
-    return this.productsService.getAllProducts();
+  getAllProducts(@Req() req: Request): Promise<Product[]> {
+    return this.productsService.getAllProducts(req);
   }
 
   @Get('producto/:id_producto')
@@ -88,7 +89,7 @@ export class ProductsController {
     currentPage: number;
     totalPages: number;
   }> {
-    return this.productsService.getProductsPaginated(page, limit)
+    return this.productsService.getProductsPaginated(page, limit);
   }
 
   @Post()
@@ -143,12 +144,12 @@ export class ProductsController {
         },
         categoria: {
           type: 'number',
-          example: '1'
+          example: '1',
         },
         marca: {
           type: 'number',
-          example: '1'
-        }
+          example: '1',
+        },
       },
     },
   })
@@ -228,5 +229,4 @@ export class ProductsController {
   deleteProduct(@Param('id_producto', ParseIntPipe) id_producto: number) {
     return this.productsService.deleteProduct(id_producto);
   }
-
 }
