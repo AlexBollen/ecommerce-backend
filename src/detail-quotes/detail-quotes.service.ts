@@ -65,7 +65,7 @@ export class DetailQuotesService {
         'producto.id_producto AS id_producto',
         'producto.nombre_producto AS nombre_producto',
         'SUM(detalle_cotizacion.cantidad_solicitada*producto.precio_venta) AS total_vendido',
-        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
+        `producto.imagen AS imagen`,
       ])
       .where("cotizacion.tipo_transaccion = 'V'")
       .groupBy('producto.id_producto, producto.nombre_producto')
@@ -138,7 +138,7 @@ export class DetailQuotesService {
         'producto.nombre_producto AS nombre_producto',
         'DATE_FORMAT(quote.created_at, "%M %Y") AS mes',
         'MONTH(quote.created_at) AS nm',
-        `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
+        `producto.imagen AS imagen`,
         'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
         'ROW_NUMBER() OVER (PARTITION BY DATE_FORMAT(quote.created_at, "%M %Y") ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking',
       ])
@@ -198,7 +198,7 @@ export class DetailQuotesService {
       .innerJoin('detalle_cotizacion.cotizacion', 'quote')
       .select([
           'producto.nombre_producto AS nombre_producto',
-          `CONCAT('http://localhost:3000/', producto.imagen) AS imagen`,
+          `producto.imagen AS imagen`,
           'SUM(detalle_cotizacion.cantidad_solicitada) AS cantidad',
           'MAX(quote.created_at) AS fecha_ultima_cotizacion', 
           'ROW_NUMBER() OVER (ORDER BY SUM(detalle_cotizacion.cantidad_solicitada) DESC) AS ranking'
