@@ -103,8 +103,10 @@ export class StocksController {
     example: 1,
   })
   getAllRoles(
-    @Query('id_producto', new DefaultValuePipe(10), ParseIntPipe) id_producto: number,
-    @Query('id_sucursal', new DefaultValuePipe(10), ParseIntPipe) id_sucursal: number,
+    @Query('id_producto', new DefaultValuePipe(10), ParseIntPipe)
+    id_producto: number,
+    @Query('id_sucursal', new DefaultValuePipe(10), ParseIntPipe)
+    id_sucursal: number,
   ) {
     return this.stocksService.getSumRelatedStocks(id_producto, id_sucursal);
   }
@@ -126,6 +128,14 @@ export class StocksController {
         cantidad_actual: {
           type: 'number',
           example: '17',
+        },
+        producto: {
+          type: 'number',
+          example: '1',
+        },
+        sucursal: {
+          type: 'number',
+          example: '1',
         },
       },
     },
