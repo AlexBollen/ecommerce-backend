@@ -47,7 +47,7 @@ export class ProductsService {
         'producto.precio_venta',
         `producto.imagen`,
         'categoria.nombre_categoria',
-      ])
+      ]);
 
     const total = await queryBuilder.getCount();
     const products = await queryBuilder
