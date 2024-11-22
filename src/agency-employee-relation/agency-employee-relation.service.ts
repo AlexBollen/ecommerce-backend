@@ -23,7 +23,7 @@ export class AgencyEmployeeRelationService {
 
   async findAll(): Promise<AgencyEmployeeRelation[]> {
     return this.relationRepository.find({
-      relations: ['id_usuario', 'id_sucursal'], // Relacionar usuarios y sucursales
+      relations: ['id_usuario', 'id_sucursal'],
     });
   }
 
@@ -38,13 +38,13 @@ export class AgencyEmployeeRelationService {
     return relation;
   }
 
-  async findByUserId(userId: number): Promise<AgencyEmployeeRelation[]> {
+  async findByUserId(userId: number): Promise<AgencyEmployeeRelation> {
     return this.relationRepository
       .createQueryBuilder('relation')
       .innerJoinAndSelect('relation.id_usuario', 'user')
       .innerJoinAndSelect('relation.id_sucursal', 'agency')
       .where('relation.id_usuario = :userId', { userId })
-      .getMany();
+      .getOne();
   }
 
   async update(
