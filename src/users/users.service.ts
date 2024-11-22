@@ -83,6 +83,13 @@ export class UsersService {
       .getRawOne();
   }
 
+  findByIdUser(id_usuario: number) {
+    return this.userRepository.findOne({
+      where: { id_usuario },
+      relations: ['AgencyRelation'],
+    });
+  }
+
   async getAllUsers(page: number, limit: number) {
     const queryBuilder = this.userRepository
       .createQueryBuilder('usuario')
