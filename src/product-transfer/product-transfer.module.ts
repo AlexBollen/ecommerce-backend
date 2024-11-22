@@ -7,6 +7,7 @@ import { TransferDetail } from 'src/transfer-detail/entities/transfer-detail.ent
 import { Stock } from 'src/stocks/entities/stock.entity';
 import { Agency } from 'src/agencies/agency.entity';
 import { Product } from 'src/products/product.entity';
+import { StocksService } from 'src/stocks/stocks.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { Product } from 'src/products/product.entity';
     ]),
   ],
   controllers: [ProductTransferController],
-  providers: [ProductTransferService],
+  providers: [ProductTransferService, StocksService],
   exports: [ProductTransferService],
 })
 export class ProductTransferModule {}

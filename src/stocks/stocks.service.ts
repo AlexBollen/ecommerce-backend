@@ -66,6 +66,7 @@ export class StocksService {
       .createQueryBuilder('stock')
       .where('stock.producto = :producto', { producto: id_producto })
       .andWhere('stock.sucursal = :sucursal', { sucursal: id_sucursal })
+      .andWhere('stock.cantidad_actual > 0')
       .getMany();
   }
 

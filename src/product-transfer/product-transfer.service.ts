@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductTransferDto } from './dto/create-product-transfer.dto';
-import { UpdateProductTransferDto } from './dto/update-product-transfer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductTransfer } from './entities/product-transfer.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Stock } from 'src/stocks/entities/stock.entity';
 import { TransferDetail } from 'src/transfer-detail/entities/transfer-detail.entity';
 import { Agency } from 'src/agencies/agency.entity';
-import { Console } from 'console';
-import { Product } from 'src/products/product.entity';
+import { StocksService } from 'src/stocks/stocks.service';
 
 @Injectable()
 export class ProductTransferService {
@@ -21,8 +19,7 @@ export class ProductTransferService {
     private transferDetailRepository: Repository<TransferDetail>,
     @InjectRepository(Agency)
     private agencyRepository: Repository<Agency>,
-    @InjectRepository(Product)
-    private productRepository: Repository<Product>,
+    private stockService: StocksService,
   ) {}
 
   getAllTransferences() {
@@ -51,56 +48,61 @@ export class ProductTransferService {
 
       for (const product of transferencia.detalles) {
         const cantidadTransferencia = product.cantidad_transferida;
-        const idStock =
-          typeof product.id_stock === 'object'
-            ? product.id_stock.id_stock
-            : product.id_stock;
+        let cantidadTmp = cantidadTransferencia;
         const idProducto = product.productoIdProducto;
 
-        console.log('Producto: ' + idProducto);
-        console.log('Cantidad: ' + cantidadTransferencia);
         if (isNaN(cantidadTransferencia) || cantidadTransferencia <= 0) {
           throw new Error('Cantidad solicitada no válida');
         }
-        console.log('IdStock: ' + idStock);
-        const producto = await this.productRepository.findOne({
-          where: { id_producto: idProducto },
-        });
 
-        const stockSaliente = await this.stockRepository.findOne({
-          where: {
-            producto: producto,
-            sucursal: sucursalSaliente,
-          },
-        });
+        const stocksSaliente = await this.stockService.getRelatedStocks(
+          idProducto,
+          sucursalSaliente.id_sucursal,
+        );
 
-        if (!stockSaliente) {
-          throw new Error('El stock en la sucursal saliente no existe');
+        if (stocksSaliente.length === 0) {
+          throw new Error('No hay existencias en los stocks de producto');
         }
 
-        if (cantidadTransferencia > stockSaliente.cantidad_actual) {
+        let cantidadExistentes = 0;
+        for (const stock of stocksSaliente) {
+          cantidadExistentes += stock.cantidad_actual;
+        }
+
+        if (cantidadTransferencia > cantidadExistentes) {
           throw new Error(
             'No hay existencias suficientes en la sucursal saliente',
           );
         }
 
-        await this.stockRepository.decrement(
-          {
-            id_stock: stockSaliente.id_stock,
-            sucursal: sucursalSaliente,
-          },
-          'cantidad_actual',
-          cantidadTransferencia,
-        );
-
-        //console.log(product.id_stock);
-        // Crear y guardar el detalle de la transferencia
-        const newDetail = this.transferDetailRepository.create({
-          cantidad_transferencia: cantidadTransferencia,
-          id_stock: product.id_stock,
-          id_transferencia: savedTransfer,
-        });
-        await queryRunner.manager.save(newDetail);
+        for (const relatedStock of stocksSaliente) {
+          if (cantidadTmp > 0) {
+            let cantidad_decremento = 0;
+            if (cantidadTmp > relatedStock.cantidad_actual) {
+              cantidad_decremento = relatedStock.cantidad_actual;
+              cantidadTmp -= relatedStock.cantidad_actual;
+              await this.stockRepository.update(
+                { id_stock: relatedStock.id_stock },
+                { cantidad_actual: 0 },
+              );
+            } else if (cantidadTmp <= relatedStock.cantidad_actual) {
+              cantidad_decremento = cantidadTmp;
+              await this.stockRepository.decrement(
+                { id_stock: relatedStock.id_stock },
+                'cantidad_actual',
+                cantidadTmp,
+              );
+              cantidadTmp = 0;
+            }
+            // Crear y guardar el detalle de la transferencia
+            const newDetail = this.transferDetailRepository.create({
+              cantidad_transferencia: cantidad_decremento,
+              id_stock: relatedStock,
+              id_transferencia: savedTransfer,
+            });
+            await queryRunner.manager.save(newDetail);
+          }
+        }
       }
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -129,9 +131,4 @@ export class ProductTransferService {
       { estado: 0 },
     );
   }
-  /*
-  updateAgency(id_sucursal: number, sucursal: UpdateAgencyDto) {
-    return this.AgencyRepository.update({ id_sucursal: id_sucursal }, sucursal);
-  }
-  */
 }

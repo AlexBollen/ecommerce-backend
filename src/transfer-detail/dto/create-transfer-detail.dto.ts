@@ -11,10 +11,6 @@ export class CreateTransferDetailDto {
   id_transferencia: ProductTransfer;
 
   @IsInt()
-  @Min(1, { message: 'El ID debe ser válido' })
-  id_stock: Stock;
-
-  @IsInt()
   @Min(1, { message: 'La cantidad transferida debe ser al menos 1' })
   cantidad_transferida: number;
 
