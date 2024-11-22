@@ -53,9 +53,10 @@ export class QuotesService {
     await queryRunner.startTransaction();
 
     try {
+      const agency = await this.agencyService.getAgency(quote.sucursalId);
+      quote.sucursal = agency
       const newQuote = this.quoteRepository.create(quote);
       const savedQuote = await queryRunner.manager.save(newQuote);
-      const agency = await this.agencyService.getAgency(quote.sucursalId);
 
       for (const product of quote.lista_productos) {
         const cantidadSolicitada = parseInt(product[1]);
