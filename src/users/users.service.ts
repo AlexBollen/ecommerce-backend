@@ -41,6 +41,7 @@ export class UsersService {
         nombre_persona: createUserDto.nombre_persona,
         username: createUserDto.username,
         password: createUserDto.password,
+        role: createUserDto.role
       });
 
       const nuevoUsuario = await queryRunner.manager.save(usuario);
